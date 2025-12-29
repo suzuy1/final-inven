@@ -56,6 +56,7 @@
                                     {{-- Exp. Tercepat --}}
                                     <td class="px-6 py-4">
                                         @if($item->nearest_expiry)
+<<<<<<< HEAD
                                             @php
                                                 $expiry = \Carbon\Carbon::parse($item->nearest_expiry);
                                                 $isExpired = $expiry->isPast();
@@ -64,6 +65,16 @@
                                                 class="{{ $isExpired ? 'text-rose-600 bg-rose-50' : 'text-slate-600 bg-slate-50' }} font-medium px-2 py-1 rounded border {{ $isExpired ? 'border-rose-200' : 'border-slate-200' }}">
                                                 {{ $expiry->format('Y-m-d') }}
                                             </span>
+=======
+                                                                            @php
+                                                                                $expiry = \Carbon\Carbon::parse($item->nearest_expiry);
+                                                                                $isExpired = $expiry->isPast();
+                                                                            @endphp
+                                             <span
+                                                                                class="{{ $isExpired ? 'text-rose-600 bg-rose-50' : 'text-slate-600 bg-slate-50' }} font-medium px-2 py-1 rounded border {{ $isExpired ? 'border-rose-200' : 'border-slate-200' }}">
+                                                                                {{ $expiry->format('Y-m-d') }}
+                                                                            </span>
+>>>>>>> origin/main
                                         @else
                                             <span class="text-slate-400">-</span>
                                         @endif
@@ -81,6 +92,7 @@
 
                                     {{-- Aksi --}}
                                     <td class="px-6 py-4 text-right">
+<<<<<<< HEAD
                                         <div class="flex justify-end items-center gap-2">
                                             {{-- Tombol Detail --}}
                                             <a href="{{ route('consumable.detail', $item->id) }}"
@@ -125,6 +137,16 @@
                                                 </button>
                                             </form>
                                         </div>
+=======
+                                        <a href="{{ route('consumable.detail', $item->id) }}"
+                                            class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+                                            Detail & Stok
+                                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </a>
+>>>>>>> origin/main
                                     </td>
                                 </tr>
                             @empty

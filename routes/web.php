@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bhp/kategori/{category}', [ConsumableController::class, 'indexItems'])->name('bhp.items');
     Route::get('/bhp/create/{category}', [ConsumableController::class, 'create'])->name('bhp.create');
     Route::post('/bhp/store', [ConsumableController::class, 'store'])->name('bhp.store');
+<<<<<<< HEAD
     Route::get('/bhp/{consumable}/edit', [ConsumableController::class, 'edit'])->name('bhp.edit');
     Route::put('/bhp/{consumable}', [ConsumableController::class, 'update'])->name('bhp.update');
     Route::delete('/bhp/{consumable}', [ConsumableController::class, 'destroy'])->name('bhp.destroy');
@@ -98,6 +99,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/bhp/batch/{consumableDetail}', [ConsumableController::class, 'updateBatch'])->name('consumable.updateBatch');
     Route::delete('/bhp/batch/{consumableDetail}', [ConsumableController::class, 'destroyBatch'])->name('consumable.destroyBatch');
 
+=======
+
+    // Detail Batch Stok (Stok Masuk)
+    Route::get('/bhp/create-batch/{consumable}', [ConsumableController::class, 'createBatch'])->name('consumable.createBatch');
+>>>>>>> origin/main
     Route::get('/bhp/detail/{consumable}', [ConsumableController::class, 'detail'])->name('consumable.detail');
     Route::post('/bhp/detail/store', [ConsumableController::class, 'storeDetail'])->name('consumable.storeDetail');
 

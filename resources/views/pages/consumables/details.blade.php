@@ -6,6 +6,7 @@
                 <span class="text-slate-500">{{ $consumable->name }} /</span>
                 <span class="text-slate-800">Kelola Stok</span>
             </div>
+<<<<<<< HEAD
 
             <div class="flex items-center gap-4">
                 <a href="{{ route('bhp.items', $consumable->category_id) }}"
@@ -43,6 +44,12 @@
                     </button>
                 </form>
             </div>
+=======
+            <a href="{{ route('bhp.items', $consumable->category_id) }}"
+                class="text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                &larr; Kembali ke Daftar
+            </a>
+>>>>>>> origin/main
         </div>
     </x-slot>
 
@@ -81,7 +88,10 @@
                                 <th class="px-3 py-3">Lokasi Penyimpanan</th>
                                 <th class="px-3 py-3">Sumber Pendanaan</th>
                                 <th class="px-3 py-3">Keterangan</th>
+<<<<<<< HEAD
                                 <th class="px-3 py-3 text-center">Aksi</th>
+=======
+>>>>>>> origin/main
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -189,6 +199,7 @@
                                     <td class="px-3 py-3 text-slate-600 text-xs max-w-[100px] truncate">
                                         {{ $d->notes ?? '-' }}
                                     </td>
+<<<<<<< HEAD
 
                                     {{-- Aksi --}}
                                     <td class="px-3 py-3 text-center">
@@ -216,6 +227,8 @@
                                             </form>
                                         </div>
                                     </td>
+=======
+>>>>>>> origin/main
                                 </tr>
                             @endforeach
                         </tbody>
