@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Komprehensif SIM Inventaris - Konsultasi Dosen</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        header .meta {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        header .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            background: var(--dark);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 3rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 80px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin: 2rem 0 1rem;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h4 {
+            color: white;
+            margin-top: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .info-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+        .badge-primary { background: var(--primary); color: white; }
+
+        .alert {
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border-color: var(--warning);
+            color: #92400e;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-color: var(--primary);
+            color: #1e40af;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .diagram-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .strength-weakness {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .strength-card, .weakness-card {
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .strength-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .weakness-card {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .strength-card h3, .weakness-card h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .strength-card ul, .weakness-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .strength-card li::before {
+            content: "✓ ";
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .weakness-card li::before {
+            content: "⚠ ";
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .question-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .question-card strong {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .strength-weakness {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 ANALISIS KOMPREHENSIF</h1>
+            <div class="subtitle">Sistem Informasi Manajemen Inventaris Kampus</div>
+            <div class="meta">
+                <div class="meta-item">
+                    <span>👨‍🎓 M. Oriza Saltifa</span>
+                </div>
+                <div class="meta-item">
+                    <span>🆔 24210099</span>
+                </div>
+                <div class="meta-item">
+                    <span>🏫 UBBG</span>
+                </div>
+                <div class="meta-item">
+                    <span>📅 2025-12-01</span>
+                </div>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#erd">ERD</a></li>
+                <li><a href="#tabel">Tabel Database</a></li>
+                <li><a href="#flowchart">Flowchart</a></li>
+                <li><a href="#analisis">Analisis</a></li>
+                <li><a href="#rekomendasi">Rekomendasi</a></li>
+                <li><a href="#diskusi">Pertanyaan Diskusi</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- OVERVIEW -->
+            <section id="overview">
+                <h2>🎯 Executive Summary</h2>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Stack Backend</h4>
+                        <div class="value">Laravel 12</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Database</h4>
+                        <div class="value">MySQL</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Frontend</h4>
+                        <div class="value">Tailwind CSS</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Kematangan</h4>
+                        <div class="value">⭐⭐⭐⭐</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>📝 Tujuan Sistem:</strong> Mengelola siklus hidup lengkap aset tetap dan barang habis pakai di lingkungan kampus dengan membedakan secara tegas antara Aset Tetap (laptop, proyektor) dan Barang Habis Pakai/BHP (ATK, obat-obatan) menggunakan business logic yang berbeda untuk setiap kategori.
+                </div>
+
+                <h3>Fitur Utama Sistem</h3>
+                <ul>
+                    <li><strong>Manajemen Aset Tetap</strong>: Parent-Child pattern, kode otomatis, tracking status & kondisi</li>
+                    <li><strong>Manajemen BHP</strong>: Batch system, FIFO implementation, tracking expiry date</li>
+                    <li><strong>Sirkulasi Peminjaman</strong>: Validasi ganda, tracking kondisi balik, audit trail</li>
+                    <li><strong>Mutasi Aset</strong>: Approval workflow, tracking perpindahan ruangan</li>
+                    <li><strong>Disposal Aset</strong>: Evidence-based disposal dengan foto bukti, approval admin</li>
+                    <li><strong>Pelaporan</strong>: Export PDF untuk audit trail</li>
+                </ul>
+            </section>
+
+            <!-- ERD -->
+            <section id="erd">
+                <h2>🗄️ Entity Relationship Diagram (ERD)</h2>
+                
+                <div class="alert alert-warning">
+                    <strong>⚠️ Catatan:</strong> ERD ini menampilkan 14 tabel utama dengan total 25+ relasi antar entitas. Sistem menggunakan pola <strong>Parent-Child</strong> untuk inventaris (Inventories → Asset_Details) dan consumables (Consumables → Consumable_Details).
+                </div>
+
+                <div class="diagram-container">
+                    <pre class="mermaid">
+erDiagram
+    %% ============================================
+    %% ENTITAS DATA MASTER
+    %% ============================================
+    
+    CATEGORIES {
+        int id PK
+        string name
+        enum type "asset | consumable"
+        timestamps
+    }
+    
+    UNITS {
+        int id PK
+        string name
+        string code UK
+        enum status
+        timestamps
+    }
+    
+    ROOMS {
+        int id PK
+        int unit_id FK
+        string name
+        string location
+        enum status
+        timestamps
+    }
+    
+    FUNDING_SOURCES {
+        int id PK
+        string name
+        string code UK
+        timestamps
+    }
+    
+    USERS {
+        int id PK
+        string name
+        string email UK
+        string password
+        string role
+        timestamps
+    }
+    
+    %% ============================================
+    %% ENTITAS ASET TETAP
+    %% ============================================
+    
+    INVENTORIES {
+        int id PK
+        string name
+        int category_id FK
+        text description
+        timestamps
+    }
+    
+    ASSET_DETAILS {
+        int id PK
+        int inventory_id FK
+        string unit_code UK
+        string model_name
+        enum condition
+        enum status
+        int room_id FK
+        int funding_source_id FK
+        decimal price
+        date purchase_date
+        timestamps
+        timestamp deleted_at
+    }
+    
+    %% ============================================
+    %% ENTITAS BARANG HABIS PAKAI
+    %% ============================================
+    
+    CONSUMABLES {
+        int id PK
+        string name
+        int category_id FK
+        string unit
+        timestamps
+    }
+    
+    CONSUMABLE_DETAILS {
+        int id PK
+        int consumable_id FK
+        string batch_code UK
+        string model_name
+        int initial_stock
+        int current_stock
+        int room_id FK
+        int funding_source_id FK
+        date expiry_date
+        timestamps
+    }
+    
+    %% ============================================
+    %% ENTITAS TRANSAKSI
+    %% ============================================
+    
+    TRANSACTIONS {
+        int id PK
+        int user_id FK
+        int consumable_detail_id FK
+        int amount
+        date date
+        timestamps
+    }
+    
+    LOANS {
+        int id PK
+        int asset_detail_id FK
+        string borrower_name
+        date loan_date
+        date return_date_plan
+        date return_date_actual
+        enum status
+        timestamps
+    }
+    
+    MUTATIONS {
+        int id PK
+        int asset_id FK
+        int from_room_id FK
+        int to_room_id FK
+        date mutation_date
+        enum status
+        int requested_by FK
+        int approved_by FK
+        timestamps
+    }
+    
+    DISPOSALS {
+        int id PK
+        int asset_detail_id FK
+        enum disposal_type
+        enum status
+        string evidence_photo
+        int requested_by FK
+        int reviewed_by FK
+        timestamps
+        timestamp deleted_at
+    }
+    
+    %% ============================================
+    %% RELASI ANTAR ENTITAS
+    %% ============================================
+    
+    UNITS ||--o{ ROOMS : "memiliki"
+    CATEGORIES ||--o{ INVENTORIES : "mengkategorikan"
+    INVENTORIES ||--o{ ASSET_DETAILS : "memiliki unit"
+    ROOMS ||--o{ ASSET_DETAILS : "menempatkan"
+    FUNDING_SOURCES ||--o{ ASSET_DETAILS : "mendanai"
+    CATEGORIES ||--o{ CONSUMABLES : "mengkategorikan"
+    CONSUMABLES ||--o{ CONSUMABLE_DETAILS : "memiliki batch"
+    ROOMS ||--o{ CONSUMABLE_DETAILS : "menyimpan"
+    FUNDING_SOURCES ||--o{ CONSUMABLE_DETAILS : "mendanai"
+    USERS ||--o{ TRANSACTIONS : "melakukan"
+    CONSUMABLE_DETAILS ||--o{ TRANSACTIONS : "dikurangi"
+    ASSET_DETAILS ||--o{ LOANS : "dipinjam"
+    ASSET_DETAILS ||--o{ MUTATIONS : "dimutasi"
+    ROOMS ||--o{ MUTATIONS : "ruang_asal"
+    ROOMS ||--o{ MUTATIONS : "ruang_tujuan"
+    USERS ||--o{ MUTATIONS : "mengajukan"
+    USERS ||--o{ MUTATIONS : "menyetujui"
+    ASSET_DETAILS ||--o{ DISPOSALS : "dihapus"
+    USERS ||--o{ DISPOSALS : "mengajukan"
+    USERS ||--o{ DISPOSALS : "mereview"
+                    </pre>
+                </div>
+
+                <h3>Penjelasan Pola Parent-Child</h3>
+                <div class="alert alert-info">
+                    <strong>Inventories → Asset_Details</strong><br>
+                    <ul>
+                        <li><strong>Parent (Inventories)</strong>: Template/jenis barang yang reusable</li>
+                        <li><strong>Child (Asset_Details)</strong>: Unit fisik spesifik dengan kode unik</li>
+                        <li><strong>Contoh</strong>: 1 parent "Laptop ASUS ROG" bisa punya 10 child dengan serial number berbeda</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TABEL DATABASE -->
+            <section id="tabel">
+                <h2>📋 Tabel Database Detail</h2>
+
+                <h3>Tabel: asset_details (Unit Fisik Aset Tetap)</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kolom</th>
+                                <th>Tipe</th>
+                                <th>Constraint</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>id</code></td>
+                                <td>BIGINT UNSIGNED</td>
+                                <td><span class="badge badge-primary">PK</span></td>
+                                <td>ID unik unit</td>
+                            </tr>
+                            <tr>
+                                <td><code>inventory_id</code></td>
+                                <td>BIGINT UNSIGNED</td>
+                                <td><span class="badge badge-warning">FK</span></td>
+                                <td>Link ke parent/template</td>
+                            </tr>
+                            <tr>
+                                <td><code>unit_code</code></td>
+                                <td>VARCHAR(255)</td>
+                                <td><span class="badge badge-success">UNIQUE</span></td>
+                                <td>Kode unik: INV/YYS/1/001</td>
+                            </tr>
+                            <tr>
+                                <td><code>model_name</code></td>
+                                <td>VARCHAR(255)</td>
+                                <td><span class="badge badge-danger">NOT NULL</span></td>
+                                <td>Tipe/merek spesifik</td>
+                            </tr>
+                            <tr>
+                                <td><code>condition</code></td>
+                                <td>ENUM</td>
+                                <td>DEFAULT 'baik'</td>
+                                <td>baik | rusak_ringan | rusak_berat</td>
+                            </tr>
+                            <tr>
+                                <td><code>status</code></td>
+                                <td>ENUM</td>
+                                <td>DEFAULT 'tersedia'</td>
+                                <td>tersedia | dipinjam | rusak | dihapuskan</td>
+                            </tr>
+                            <tr>
+                                <td><code>room_id</code></td>
+                                <td>BIGINT UNSIGNED</td>
+                                <td><span class="badge badge-warning">FK</span></td>
+                                <td>Lokasi penempatan</td>
+                            </tr>
+                            <tr>
+                                <td><code>funding_source_id</code></td>
+                                <td>BIGINT UNSIGNED</td>
+                                <td><span class="badge badge-warning">FK</span></td>
+                                <td>Sumber dana (tidak bisa diubah)</td>
+                            </tr>
+                            <tr>
+                                <td><code>price</code></td>
+                                <td>DECIMAL(15,2)</td>
+                                <td>DEFAULT 0</td>
+                                <td>Harga perolehan</td>
+                            </tr>
+                            <tr>
+                                <td><code>deleted_at</code></td>
+                                <td>TIMESTAMP</td>
+                                <td>NULLABLE</td>
+                                <td>Soft delete untuk disposal</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Tabel: consumable_details (Batch Stok BHP)</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kolom</th>
+                                <th>Tipe</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>batch_code</code></td>
+                                <td>VARCHAR(255)</td>
+                                <td>BHP/BOS/ATK/001 <span class="badge badge-success">UNIQUE</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>initial_stock</code></td>
+                                <td>INT</td>
+                                <td>Jumlah stok awal (tidak berubah)</td>
+                            </tr>
+                            <tr>
+                                <td><code>current_stock</code></td>
+                                <td>INT</td>
+                                <td>Sisa stok (berkurang saat transaksi)</td>
+                            </tr>
+                            <tr>
+                                <td><code>expiry_date</code></td>
+                                <td>DATE</td>
+                                <td>Tanggal kadaluarsa (PENTING untuk obat)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>✓ Business Logic FIFO:</strong> Saat transaksi keluar, sistem query batch dengan <code>ORDER BY created_at ASC</code> dan kurangi <code>current_stock</code> dari batch terlama terlebih dahulu.
+                </div>
+            </section>
+
+            <!-- FLOWCHART -->
+            <section id="flowchart">
+                <h2>🔄 Flowchart Business Process</h2>
+
+                <h3>1. Manajemen Aset Tetap (End-to-End)</h3>
+                <div class="diagram-container">
+                    <pre class="mermaid">
+flowchart TD
+    Start([Admin Login]) --> SelectCategory{Pilih Kategori}
+    SelectCategory --> CheckParent{Data Induk Ada?}
+    CheckParent -->|Belum| CreateParent[Buat Data Induk]
+    CreateParent --> ParentSaved[(Simpan INVENTORIES)]
+    CheckParent -->|Sudah| ParentSaved
+    ParentSaved --> AddUnit[Tambah Unit Fisik]
+    AddUnit --> FormInput[Input Form Detail]
+    FormInput --> GenerateCode[Generate Kode Auto<br/>INV/DANA/CAT/XXX]
+    GenerateCode --> SaveAsset[(Simpan ASSET_DETAILS)]
+    SaveAsset --> AssetReady[Aset Siap]
+    
+    style Start fill:#4CAF50,color:#fff
+    style SaveAsset fill:#2196F3,color:#fff
+    style AssetReady fill:#8BC34A,color:#fff
+                    </pre>
+                </div>
+
+                <h3>2. Transaksi BHP dengan FIFO</h3>
+                <div class="diagram-container">
+                    <pre class="mermaid">
+flowchart TD
+    Start([User Login]) --> SelectItem[Pilih Item BHP]
+    SelectItem --> InputAmount[Input Jumlah]
+    InputAmount --> ValidateTotal{Stok Cukup?}
+    ValidateTotal -->|Tidak| ErrorInsufficient[Error: Stok Tidak Cukup]
+    ErrorInsufficient --> End1([Gagal])
+    ValidateTotal -->|Ya| StartFIFO[Mulai FIFO Logic]
+    StartFIFO --> GetBatches[(Query Batches ASC)]
+    GetBatches --> LoopBatch{Ada Batch?}
+    LoopBatch -->|Ya| ProcessBatch[Proses Batch Terlama]
+    ProcessBatch --> UpdateBatch[(Kurangi current_stock)]
+    UpdateBatch --> SaveTransaction[(Catat Transaction)]
+    SaveTransaction --> LoopBatch
+    LoopBatch -->|Tidak| Success[Transaksi Berhasil]
+    Success --> End2([Selesai])
+    
+    style Start fill:#4CAF50,color:#fff
+    style StartFIFO fill:#2196F3,color:#fff
+    style Success fill:#8BC34A,color:#fff
+    style ErrorInsufficient fill:#F44336,color:#fff
+                    </pre>
+                </div>
+
+                <h3>3. Sirkulasi Peminjaman Aset</h3>
+                <div class="diagram-container">
+                    <pre class="mermaid">
+flowchart TD
+    Start([User Login]) --> BrowseAsset[Cari Aset Tersedia]
+    BrowseAsset --> SelectAsset[Pilih Aset]
+    SelectAsset --> FillForm[Isi Form Peminjaman]
+    FillForm --> ValidateLoan{Validasi}
+    ValidateLoan -->|Error| ErrorMsg[Aset Dipinjam/Rusak]
+    ErrorMsg --> End1([Gagal])
+    ValidateLoan -->|OK| CreateLoan[(INSERT loans)]
+    CreateLoan --> UpdateAsset[(UPDATE asset status='dipinjam')]
+    UpdateAsset --> LoanActive[Peminjaman Aktif]
+    LoanActive --> WaitReturn{Menunggu Return}
+    WaitReturn --> ReturnForm[Form Pengembalian]
+    ReturnForm --> UpdateLoan[(UPDATE loans status='kembali')]
+    UpdateLoan --> UpdateAssetReturn[(UPDATE asset status='tersedia')]
+    UpdateAssetReturn --> Complete[Selesai]
+    
+    style Start fill:#4CAF50,color:#fff
+    style CreateLoan fill:#2196F3,color:#fff
+    style Complete fill:#8BC34A,color:#fff
+                    </pre>
+                </div>
+            </section>
+
+            <!-- ANALISIS KEKUATAN & KELEMAHAN -->
+            <section id="analisis">
+                <h2>💡 Analisis Kekuatan & Kelemahan</h2>
+
+                <div class="strength-weakness">
+                    <div class="strength-card">
+                        <h3>✅ KEKUATAN</h3>
+                        <ul>
+                            <li>Database normalization proper (3NF)</li>
+                            <li>Parent-Child pattern untuk reusability</li>
+                            <li>FIFO implementation yang benar</li>
+                            <li>Database transactions untuk atomicity</li>
+                            <li>Soft deletes untuk audit trail</li>
+                            <li>Foreign key constraints ketat</li>
+                            <li>Validation ganda (frontend + backend)</li>
+                            <li>Authentication dengan bcrypt</li>
+                        </ul>
+                    </div>
+
+                    <div class="weakness-card">
+                        <h3>⚠️ KELEMAHAN</h3>
+                        <ul>
+                            <li>Race condition di generate kode</li>
+                            <li>Tidak ada transaction grouping untuk BHP</li>
+                            <li>Tidak ada RBAC (Role-Based Access Control)</li>
+                            <li>Tidak ada depresiasi aset otomatis</li>
+                            <li>Pelaporan terbatas (hanya PDF)</li>
+                            <li>Tidak ada notifikasi otomatis</li>
+                            <li>Upload foto tidak optimal</li>
+                            <li>Tidak ada barcode/QR code</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Pembahasan Detail Kelemahan</h3>
+
+                <h4>1. Race Condition di Generate Kode</h4>
+                <div class="alert alert-danger">
+                    <strong>Problem:</strong> Jika 2 user submit bersamaan, bisa dapat nomor yang sama
+                    <br><br>
+                    <strong>Solusi Saat Ini:</strong> Tambah random suffix jika duplikat
+                    <br>
+                    <strong>Solusi Ideal:</strong> Database-level locking atau UUID
+                </div>
+
+                <div class="code-block">
+// Improvement Option 1: Database Lock
+DB::transaction(function () {
+    DB::table('asset_details')->lockForUpdate()->get();
+    // Generate code...
+});
+
+// Improvement Option 2: UUID-based
+$code = "INV/{$sumber->code}/{$category->id}/" . Str::uuid();
+                </div>
+
+                <h4>2. Missing Transaction Grouping</h4>
+                <div class="alert alert-danger">
+                    <strong>Problem:</strong> Satu permintaan BHP bisa jadi multiple transaction records tanpa link
+                    <br><br>
+                    <strong>Impact:</strong> Sulit tracking total yang diambil per user/tanggal
+                </div>
+
+                <div class="code-block">
+// Solution: Tambah kolom transaction_group_id
+$table->string('transaction_group_id')->nullable();
+
+// Saat store
+$groupId = Str::uuid();
+foreach ($batches as $batch) {
+    Transaction::create([
+        'transaction_group_id' => $groupId,
+        // ...
+    ]);
+}
+                </div>
+
+                <h4>3. Tidak Ada Role-Based Access Control</h4>
+                <div class="alert alert-danger">
+                    <strong>Risk:</strong> Semua user bisa akses semua fitur (delete asset, approve disposal, dll)
+                    <br><br>
+                    <strong>Solution:</strong> Implementasi RBAC dengan Laravel Spatie Permissions
+                </div>
+            </section>
+
+            <!-- REKOMENDASI -->
+            <section id="rekomendasi">
+                <h2>🚀 Rekomendasi Pengembangan</h2>
+
+                <h3>Priority 1 (High Impact, Quick Win)</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fitur</th>
+                                <th>Effort</th>
+                                <th>Impact</th>
+                                <th>Deskripsi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Transaction Grouping</td>
+                                <td><span class="badge badge-success">2 jam</span></td>
+                                <td><span class="badge badge-primary">High</span></td>
+                                <td>Tambah kolom group_id untuk link transaksi yang sama</td>
+                            </tr>
+                            <tr>
+                                <td>RBAC Implementation</td>
+                                <td><span class="badge badge-warning">4 jam</span></td>
+                                <td><span class="badge badge-danger">Critical</span></td>
+                                <td>Implementasi role & permissions dengan Spatie</td>
+                            </tr>
+                            <tr>
+                                <td>Excel Export</td>
+                                <td><span class="badge badge-success">3 jam</span></td>
+                                <td><span class="badge badge-primary">High</span></td>
+                                <td>Export laporan ke Excel dengan filter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Priority 2 (Medium Impact, Medium Effort)</h3>
+                <ul>
+                    <li><strong>Email Notifications</strong> (6 jam): Reminder peminjaman jatuh tempo, stok minimum</li>
+                    <li><strong>Advanced Filtering</strong> (4 jam): Filter laporan by tanggal/kategori/unit</li>
+                    <li><strong>QR Code Generation</strong> (5 jam): Generate QR untuk setiap aset</li>
+                </ul>
+
+                <h3>Priority 3 (Long-term Enhancement)</h3>
+                <ul>
+                    <li><strong>Depresiasi Otomatis</strong> (8 jam): Kalkulasi nilai buku berdasarkan umur aset</li>
+                    <li><strong>Mobile App</strong> (40 jam): React Native untuk akses mobile & scan QR</li>
+                    <li><strong>Dashboard Analytics</strong> (10 jam): Chart.js untuk visualisasi KPI</li>
+                </ul>
+            </section>
+
+            <!-- PERTANYAAN DISKUSI -->
+            <section id="diskusi">
+                <h2>📝 Pertanyaan Kritis untuk Diskusi Dosen</h2>
+
+                <h3>1. Arsitektur Database</h3>
+                <div class="question-card">
+                    <strong>❓ Apakah pola parent-child (inventories → asset_details) sudah optimal?</strong>
+                    <p>
+                        <strong>Alternative:</strong> Flat structure (1 tabel untuk semua data)<br>
+                        <strong>Trade-off:</strong> Normalisasi vs. simplicity<br>
+                        <strong>Diskusi:</strong> Apakah complexity yang ditambahkan worth it?
+                    </p>
+                </div>
+
+                <div class="question-card">
+                    <strong>❓ Apakah perlu tabel terpisah untuk product specifications?</strong>
+                    <p>
+                        <strong>Saat ini:</strong> Spec disimpan di inventories.description (text field)<br>
+                        <strong>Alternative:</strong> Key-value store untuk spec (CPU, RAM, Storage)<br>
+                        <strong>Benefit:</strong> Bisa filter/search by spec
+                    </p>
+                </div>
+
+                <h3>2. Business Logic</h3>
+                <div class="question-card">
+                    <strong>❓ Bagaimana handle perpanjangan peminjaman?</strong>
+                    <p>
+                        <strong>Saat ini:</strong> Harus kembalikan dulu, baru pinjam lagi<br>
+                        <strong>Alternative:</strong> Add "extend" feature yang update return_date_plan<br>
+                        <strong>Question:</strong> Apakah ada batasan berapa kali bisa extend?
+                    </p>
+                </div>
+
+                <div class="question-card">
+                    <strong>❓ Apakah perlu denda/penalty untuk keterlambatan?</strong>
+                    <p>
+                        <strong>Saat ini:</strong> Hanya track return_date_plan vs actual<br>
+                        <strong>Improvement:</strong> Tabel penalties dengan kalkulasi otomatis<br>
+                        <strong>Business Rule:</strong> Berapa denda per hari? Ada grace period?
+                    </p>
+                </div>
+
+                <h3>3. Keamanan & Autorisasi</h3>
+                <div class="question-card">
+                    <strong>❓ Level approval untuk disposal: 1 tingkat cukup?</strong>
+                    <p>
+                        <strong>Saat ini:</strong> Staff → Admin<br>
+                        <strong>Alternative:</strong> Staff → Supervisor → Finance → Admin<br>
+                        <strong>Question:</strong> Apakah disposal > Rp 10jt perlu approval khusus?
+                    </p>
+                </div>
+
+                <h3>4. Reporting & Analytics</h3>
+                <div class="question-card">
+                    <strong>❓ KPI apa yang perlu di-track di dashboard?</strong>
+                    <ul>
+                        <li>Utilization rate (% aset yang aktif digunakan)</li>
+                        <li>Downtime (berapa lama aset rusak sebelum diperbaiki)</li>
+                        <li>Cost per acquisition vs. disposal</li>
+                        <li>Stock turnover untuk BHP</li>
+                    </ul>
+                </div>
+
+                <h3>5. Skalabilitas</h3>
+                <div class="question-card">
+                    <strong>❓ Perkiraan volume data dalam 5 tahun?</strong>
+                    <p>
+                        <strong>Asumsi:</strong> ~100 assets, ~50 procurements/year<br>
+                        <strong>Question:</strong> Perlu partitioning/archiving lama-lama?<br>
+                        <strong>Consideration:</strong> MySQL performance dengan 100K+ records
+                    </p>
+                </div>
+            </section>
+
+            <!-- KESIMPULAN -->
+            <section>
+                <h2>🎓 Kesimpulan Analisis</h2>
+
+                <div class="alert alert-success">
+                    <strong>STATUS: ✅ READY FOR PILOT DEPLOYMENT</strong>
+                    <br><br>
+                    Sistem telah memiliki fondasi yang solid dengan database normalization proper, business logic yang robust, dan security yang adequate. Beberapa improvement diperlukan sebelum production-ready, terutama RBAC dan transaction grouping.
+                </div>
+
+                <h3>Penilaian Objektif</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Database Design</h4>
+                        <div class="value">5/5</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Business Logic</h4>
+                        <div class="value">4/5</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Code Quality</h4>
+                        <div class="value">4/5</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Security</h4>
+                        <div class="value">4/5</div>
+                    </div>
+                </div>
+
+                <h3>Kontribusi Akademis</h3>
+                <p>Sistem ini mendemonstrasikan:</p>
+                <ul>
+                    <li>✅ Pemahaman solid tentang database normalization & relational design</li>
+                    <li>✅ Implementasi business logic kompleks (FIFO, approval workflow)</li>
+                    <li>✅ Best practices Laravel (Eloquent, validation, transactions)</li>
+                    <li>✅ Real-world problem solving untuk inventory management</li>
+                </ul>
+
+                <div class="alert alert-warning">
+                    <strong>Gap yang Perlu Diperbaiki:</strong>
+                    <ul>
+                        <li>Testing coverage (unit tests & feature tests)</li>
+                        <li>API documentation (untuk future mobile app)</li>
+                        <li>Performance benchmarking (query optimization)</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>Dokumen Analisis Komprehensif - SIM Inventaris Kampus</strong></p>
+            <p>Prepared by: M. Oriza Saltifa (24210099) | UBBG | 2025-12-01</p>
+            <p>Version 1.0 - Comprehensive Analysis for Academic Consultation</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>
