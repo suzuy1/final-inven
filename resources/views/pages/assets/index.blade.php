@@ -134,13 +134,19 @@
                                 <x-table.actions>
                                     {{-- EDIT --}}
                                     <x-table.action-link href="{{ route('asset.edit', $unit->id) }}">
-                                        ✏️ Edit
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                        </svg>
+                                        Edit
                                     </x-table.action-link>
 
                                     {{-- DISPOSAL --}}
                                     @if($unit->isDisposable())
                                         <x-table.action-link href="{{ route('disposals.create', $unit->id) }}" class="hover:bg-rose-50 text-rose-600 font-bold">
-                                            ⚠️ Disposal
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                            </svg>
+                                            Disposal
                                         </x-table.action-link>
                                     @endif
 

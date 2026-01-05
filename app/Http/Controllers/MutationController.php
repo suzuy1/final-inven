@@ -47,7 +47,7 @@ class MutationController extends Controller
             });
         }
 
-        $mutations = $query->latest()->paginate(10);
+        $mutations = $query->latest()->paginate(10)->appends(request()->query());
 
         return view('pages.mutations.index', compact('mutations'));
     }
@@ -85,6 +85,13 @@ class MutationController extends Controller
 
         // Get asset to validate room change
         $asset = AssetDetail::findOrFail($validated['asset_id']);
+
+        // ✅ FIX: Prevent mutation of borrowed assets
+        if ($asset->status === \App\Enums\AssetStatus::DIPINJAM) {
+            return back()->withErrors([
+                'asset_id' => 'Aset sedang dipinjam. Tidak dapat dimutasi sampai dikembalikan.'
+            ])->withInput();
+        }
 
         // Validate that to_room_id is different from current room
         if ($asset->room_id == $validated['to_room_id']) {

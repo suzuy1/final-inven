@@ -23,7 +23,6 @@ class DashboardController extends Controller
         // --- 2. FINANCIAL INSIGHTS ---
         $totalAssetValue = AssetDetail::sum('price');
 
-<<<<<<< HEAD
         // --- NEW: INVENTORY STATISTICS ---
         // Total items per category
         $categoryItemCount = DB::table('asset_details')
@@ -50,8 +49,6 @@ class DashboardController extends Controller
                 return [$labels[$item->condition] ?? $item->condition => $item->count];
             });
 
-=======
->>>>>>> origin/main
         // Asset Value by Category
         $assetValueByCategory = DB::table('asset_details')
             ->join('inventories', 'asset_details.inventory_id', '=', 'inventories.id')
@@ -121,11 +118,8 @@ class DashboardController extends Controller
             'totalAssetValue',
             'chartCategoryLabels',
             'chartCategoryValues',
-<<<<<<< HEAD
             'categoryItemCount',
             'conditionStats',
-=======
->>>>>>> origin/main
             'utilizationRate',
             'activeLoans',
             'lowStockCount',

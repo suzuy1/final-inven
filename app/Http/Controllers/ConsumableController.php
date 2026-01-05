@@ -143,7 +143,7 @@ class ConsumableController extends Controller
             return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
-<<<<<<< HEAD
+
 
 
 
@@ -248,6 +248,5 @@ class ConsumableController extends Controller
         return redirect()->route('bhp.items', $categoryId)
             ->with('success', 'Data barang berhasil dihapus.');
     }
-=======
->>>>>>> origin/main
+
 }

@@ -29,14 +29,14 @@ class DisposalController extends Controller
                 'assetDetail.inventory',
                 'requester',
                 'reviewer'
-            ])->latest()->paginate(20)
+            ])->latest()->paginate(20)->appends(request()->query())
             : Disposal::with([
                 'assetDetail' => function ($query) {
                     $query->withTrashed();
                 },
                 'assetDetail.inventory',
                 'reviewer'
-            ])->where('requested_by', $user->id)->latest()->paginate(20);
+            ])->where('requested_by', $user->id)->latest()->paginate(20)->appends(request()->query());
 
         // Count pending disposals for admin
         $pendingCount = $user->role === 'admin'

@@ -1,0 +1,689 @@
+﻿<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">
+                    Permintaan Barang
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">Portal pengajuan aset dan stok barang unit kerja.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span
+                    class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 shadow-sm">
+                    {{ now()->format('d M Y') }}
+                </span>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="py-8 bg-gray-50 min-h-screen font-sans">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+
+            {{-- 1. Procurement Stats (Decision Support) --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {{-- Pending Requests (Priority) --}}
+                <div
+                    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-6 text-white shadow-lg shadow-orange-200">
+                    <div class="relative z-10">
+                        <p class="text-amber-100 text-sm font-medium">Menunggu Persetujuan</p>
+                        <div class="flex items-baseline gap-2 mt-2">
+                            <h3 class="text-3xl font-bold">{{ $requests->where('status', 'pending')->count() }}</h3>
+                            <span class="text-sm text-amber-100 bg-white/20 px-2 py-0.5 rounded text-xs">Permintaan
+                                Baru</span>
+                        </div>
+                    </div>
+                    <div class="absolute -right-2 -bottom-4 opacity-20 transform rotate-12">
+                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" />
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Total Estimated Value --}}
+                <div
+                    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg shadow-emerald-200">
+                    <div class="relative z-10">
+                        <p class="text-emerald-100 text-sm font-medium">Total Estimasi Anggaran</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span class="text-lg font-medium text-emerald-200">Rp</span>
+                            {{-- Asumsi Anda bisa menghitung sum dari collection/query --}}
+                            <h3 class="text-3xl font-bold">
+                                {{ number_format($requests->sum(fn($r) => $r->unit_price_estimation * $r->quantity), 0, ',', '.') }}
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="absolute -right-2 -bottom-4 opacity-20 transform rotate-12">
+                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Total Requests --}}
+                <div
+                    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-600 p-6 text-white shadow-lg shadow-indigo-200">
+                    <div class="relative z-10">
+                        <p class="text-indigo-100 text-sm font-medium">Total Usulan</p>
+                        <div class="flex items-baseline gap-2 mt-2">
+                            <h3 class="text-3xl font-bold">{{ $requests->total() }}</h3>
+                            <span class="text-sm text-indigo-200">Item</span>
+                        </div>
+                    </div>
+                    <div class="absolute -right-2 -bottom-4 opacity-20 transform rotate-12">
+                        <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 2. Modern Filter Toolbar --}}
+            <div class="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <form action="{{ route('permintaan.index') }}" method="GET"
+                    class="flex flex-col md:flex-row gap-3 w-full">
+                    <div class="relative w-full md:w-96 group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari barang, pengusul..."
+                            class="block w-full pl-10 pr-4 py-2.5 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm bg-gray-50 focus:bg-white placeholder-gray-400">
+                    </div>
+
+                    <div class="w-full md:w-48">
+                        <select name="status" onchange="this.form.submit()"
+                            class="block w-full py-2.5 pl-3 pr-10 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white cursor-pointer">
+                            <option value="">Semua Status</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu
+                            </option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui
+                            </option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak
+                            </option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai
+                            </option>
+                        </select>
+                    </div>
+
+                    {{-- Reset Filter Button if needed --}}
+                    @if(request()->has('search') || request()->has('status'))
+                        <a href="{{ route('permintaan.index') }}"
+                            class="inline-flex items-center justify-center px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                            Reset
+                        </a>
+                    @endif
+                </form>
+
+                <div class="w-full md:w-auto ml-auto">
+                    <a href="{{ route('permintaan.create') }}"
+                        class="w-full md:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-xl font-semibold text-white text-sm hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-lg shadow-indigo-500/30 whitespace-nowrap">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                        Buat Usulan
+                    </a>
+                </div>
+            </div>
+
+            {{-- 3. Data Table --}}
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-semibold">
+                                <th class="px-6 py-4">Tanggal & Pengusul</th>
+                                <th class="px-6 py-4">Detail Barang</th>
+                                <th class="px-6 py-4 text-center">Qty</th>
+                                <th class="px-6 py-4 text-right">Est. Harga</th>
+                                <th class="px-6 py-4 text-center">Status</th>
+                                <th class="px-6 py-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($requests as $req)
+                                <tr class="hover:bg-gray-50/80 transition-colors duration-200 group">
+                                    {{-- Kolom 1: Meta --}}
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-xs font-semibold text-gray-400 mb-0.5">{{ $req->created_at->format('d M Y') }}</span>
+                                            <div class="flex items-center gap-2">
+                                                <div
+                                                    class="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                                                    {{ substr($req->requestor_name, 0, 2) }}
+                                                </div>
+                                                <span
+                                                    class="text-sm font-bold text-gray-700">{{ $req->requestor_name }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    {{-- Kolom 2: Barang --}}
+                                    <td class="px-6 py-4 max-w-xs">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-sm font-bold text-gray-900">{{ $req->item_name }}</span>
+                                                <span
+                                                    class="px-1.5 py-0.5 rounded text-[10px] font-bold border {{ $req->type == 'asset' ? 'bg-purple-50 text-purple-600 border-purple-100' : 'bg-orange-50 text-orange-600 border-orange-100' }}">
+                                                    {{ $req->type == 'asset' ? 'Aset' : 'BHP' }}
+                                                </span>
+                                            </div>
+                                            {{-- Tampilkan Kategori --}}
+                                            @if($req->category)
+                                                <div class="flex items-center gap-1 mb-1">
+                                                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                    </svg>
+                                                    <span
+                                                        class="text-xs text-indigo-600 font-medium">{{ $req->category->name }}</span>
+                                                </div>
+                                            @endif
+                                            @if($req->description)
+                                                <p class="text-xs text-gray-500 truncate" title="{{ $req->description }}">
+                                                    {{ $req->description }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </td>
+
+                                    {{-- Kolom 3: Qty --}}
+                                    <td class="px-6 py-4 text-center">
+                                        <span
+                                            class="inline-block bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded-md">
+                                            {{ $req->quantity }}
+                                        </span>
+                                    </td>
+
+                                    {{-- Kolom 4: Harga --}}
+                                    <td class="px-6 py-4 text-right">
+                                        @if($req->unit_price_estimation)
+                                            <div class="text-sm font-medium text-gray-900">
+                                                Rp {{ number_format($req->unit_price_estimation, 0, ',', '.') }}
+                                            </div>
+                                            <div class="text-[10px] text-gray-400">/unit</div>
+                                            <div class="text-xs text-emerald-600 font-bold mt-1">
+                                                Total: Rp
+                                                {{ number_format($req->unit_price_estimation * $req->quantity, 0, ',', '.') }}
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400 text-xs italic">- Belum ada estimasi -</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- Kolom 5: Status --}}
+                                    <td class="px-6 py-4 text-center">
+                                        @php
+                                            $statusStyle = match($req->status) {
+                                                'pending' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                                'approved' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                                'rejected' => 'bg-rose-50 text-rose-700 border-rose-200',
+                                                'completed' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                                                default => 'bg-gray-50 text-gray-700 border-gray-200',
+                                            };
+
+                                            $statusLabel = match($req->status) {
+                                                'pending' => 'Menunggu',
+                                                'approved' => 'Disetujui',
+                                                'rejected' => 'Ditolak',
+                                                'completed' => 'Selesai',
+                                                default => 'Unknown',
+                                            };
+                                        @endphp
+                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full {{ $statusStyle }} border text-xs font-bold">
+                                            {{-- Logika Ikon SVG --}}
+                                            @if($req->status == 'pending')
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            @elseif($req->status == 'approved')
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            @elseif($req->status == 'rejected')
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            @elseif($req->status == 'completed')
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            @endif
+                                            {{ $statusLabel }}
+                                        </div>
+
+                                        @if($req->admin_note)
+                                            <div class="group relative inline-block align-middle ml-1">
+                                                <svg class="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                <div
+                                                    class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-[10px] rounded shadow-lg z-10 text-center whitespace-normal">
+                                                    {{ $req->admin_note }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </td>
+
+                                    {{-- Kolom 6: Aksi --}}
+                                    <td class="px-6 py-4 text-center">
+                                        <x-table.actions>
+                                            {{-- APPROVE (ADMIN & PENDING) --}}
+                                            @if(Auth::user()->role == 'admin' && $req->status == 'pending')
+                                                <x-table.action-button
+                                                    onclick="openApproveModal('{{ $req->id }}', '{{ $req->item_name }}', '{{ $req->quantity }}', '{{ $req->type }}', '{{ $req->category->name ?? 'Tidak Dikategorikan' }}')"
+                                                    class="hover:bg-emerald-50 text-emerald-600 font-bold flex items-center">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    Setujui Usulan
+                                                </x-table.action-button>
+
+                                                <x-table.action-button onclick="openRejectModal({{ $req->id }})"
+                                                    class="hover:bg-rose-50 text-rose-600 font-bold flex items-center">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    Tolak Usulan
+                                                </x-table.action-button>
+                                            @endif
+
+                                            {{-- COMPLETE (ADMIN & APPROVED) --}}
+                                            @if(Auth::user()->role == 'admin' && $req->status == 'approved')
+                                                <x-table.action-button
+                                                    onclick="openCompleteModal('{{ $req->id }}', '{{ $req->item_name }}', '{{ $req->quantity }}', '{{ $req->unit_price_estimation }}', '{{ $req->type }}', '{{ $req->category->name ?? 'Tidak Dikategorikan' }}')"
+                                                    class="hover:bg-indigo-50 text-indigo-600 font-bold flex items-center">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-8a2 2 0 012-2h10a2 2 0 012 2v8m2-2a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                                    </svg>
+                                                    Selesaikan
+                                                </x-table.action-button>
+                                            @endif
+
+                                            {{-- DELETE (PENDING & OWNER/ADMIN) --}}
+                                            @if($req->status == 'pending' && (Auth::user()->id == $req->user_id || Auth::user()->role == 'admin'))
+                                                <div class="border-t"></div>
+                                                <x-table.action-delete :action="route('permintaan.destroy', $req->id)"
+                                                    confirm="Hapus permanen usulan ini?" />
+                                            @endif
+
+                                            {{-- IF NO ACTIONS --}}
+                                            @if(!(Auth::user()->role == 'admin' && in_array($req->status, ['pending', 'approved'])) && !($req->status == 'pending' && (Auth::user()->id == $req->user_id || Auth::user()->role == 'admin')))
+                                                <div class="px-4 py-2 text-slate-400 italic">Tidak ada aksi tersedia</div>
+                                            @endif
+                                        </x-table.actions>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-20 text-center">
+                                        <div
+                                            class="mx-auto h-24 w-24 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
+                                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-900">Tidak ada usulan ditemukan</h3>
+                                        <p class="text-gray-500 mt-1 text-sm">Coba sesuaikan filter pencarian atau buat
+                                            usulan baru.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if($requests->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
+                        {{ $requests->withQueryString()->links() }}
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+</x-app-layout>
+
+{{-- Script Logic --}}
+<script>
+    // 1. REJECT LOGIC
+    function openRejectModal(id) {
+        let reason = prompt("Masukkan alasan penolakan (Wajib diisi):");
+        if (reason !== null && reason.trim() !== "") {
+            submitStatusForm(id, 'rejected', reason);
+        } else if (reason !== null) {
+            alert("Alasan penolakan tidak boleh kosong.");
+        }
+    }
+
+    // 2. APPROVE LOGIC (MODAL)
+    function openApproveModal(id, itemName, qty, itemType, categoryName) {
+        // Set values ke Modal
+        document.getElementById('approve_id').value = id;
+        document.getElementById('modal_item_name').innerText = itemName;
+        document.getElementById('modal_item_qty').innerText = qty + ' Unit';
+        document.getElementById('modal_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'Barang Habis Pakai';
+        document.getElementById('modal_item_category').innerText = categoryName;
+
+        // Show Modal
+        document.getElementById('approveModal').classList.remove('hidden');
+    }
+
+    function closeApproveModal() {
+        document.getElementById('approveModal').classList.add('hidden');
+    }
+
+    // 3. COMPLETE LOGIC (MODAL)
+    function openCompleteModal(id, itemName, qty, price, itemType, categoryName) {
+        document.getElementById('complete_id').value = id;
+        document.getElementById('modal_complete_item_name').innerText = itemName;
+        document.getElementById('modal_complete_item_qty').innerText = qty + ' Unit';
+        document.getElementById('modal_complete_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'Barang Habis Pakai';
+        document.getElementById('modal_complete_item_category').innerText = categoryName;
+
+        // Auto-Fill Input
+        let today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+        document.getElementById('batch_code').value = 'PROC-' + id + '-' + today;
+        document.getElementById('unit_price').value = price;
+
+        document.getElementById('completeModal').classList.remove('hidden');
+    }
+
+    function closeCompleteModal() {
+        document.getElementById('completeModal').classList.add('hidden');
+    }
+
+    // Helper untuk Submit Form Dinamis (Reject)
+    function submitStatusForm(id, status, note = null) {
+        let form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/permintaan/' + id + '/status';
+
+        let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let hiddenMethod = document.createElement('input');
+        hiddenMethod.type = 'hidden';
+        hiddenMethod.name = '_method';
+        hiddenMethod.value = 'PUT';
+        form.appendChild(hiddenMethod);
+
+        let hiddenCsrf = document.createElement('input');
+        hiddenCsrf.type = 'hidden';
+        hiddenCsrf.name = '_token';
+        hiddenCsrf.value = csrfToken;
+        form.appendChild(hiddenCsrf);
+
+        let hiddenStatus = document.createElement('input');
+        hiddenStatus.type = 'hidden';
+        hiddenStatus.name = 'status';
+        hiddenStatus.value = status;
+        form.appendChild(hiddenStatus);
+
+        if (note) {
+            let hiddenNote = document.createElement('input');
+            hiddenNote.type = 'hidden';
+            hiddenNote.name = 'admin_note';
+            hiddenNote.value = note;
+            form.appendChild(hiddenNote);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+{{-- MODAL APPROVAL --}}
+<div id="approveModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+
+        {{-- Background overlay --}}
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+            onclick="closeApproveModal()"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        {{-- Modal Panel --}}
+        <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form id="approveForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="status" value="approved">
+
+                {{-- Dynamic Action URL via JS --}}
+                <script>
+                    document.getElementById('approveForm').addEventListener('submit', function (e) {
+                        e.preventDefault(); // Stop default verify logic first
+
+                        let id = document.getElementById('approve_id').value;
+                        let stockSource = document.getElementById('consumable_id').value;
+
+                        this.action = '/permintaan/' + id + '/status';
+
+                        // UX WARNING: Jika tidak pilih stok, konfirmasi pembelian baru
+                        if (stockSource === "") {
+                            if (confirm("PERINGATAN: Anda belum memilih Sumber Stok!\n\nSistem akan mencatat ini sebagai PEMBELIAN BARU (Stok Fisik tidak akan berkurang).\n\nApakah Anda yakin ingin melanjutkan?")) {
+                                this.submit();
+                            }
+                        } else {
+                            // Jika pilih stok, langsung gas
+                            this.submit();
+                        }
+                    });
+                </script>
+                <input type="hidden" id="approve_id" name="id">
+
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div
+                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                Setujui Permintaan Barang
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 mb-2">
+                                    Anda akan menyetujui permintaan untuk <span id="modal_item_name"
+                                        class="font-bold text-gray-800">Item</span> sebanyak <span id="modal_item_qty"
+                                        class="font-bold text-gray-800">0</span>.
+                                </p>
+                                {{-- Info Kategori --}}
+                                <div class="bg-indigo-50 border border-indigo-200 rounded-md p-3 mb-4">
+                                    <div class="flex items-center gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-500">Tipe:</span>
+                                            <span id="modal_item_type" class="font-bold text-indigo-700">-</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-500">Kategori:</span>
+                                            <span id="modal_item_category" class="font-bold text-indigo-700">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Opsi Ambil Dari Stok --}}
+                                <div class="bg-amber-50 border border-amber-200 rounded-md p-3 mb-4">
+                                    <label for="consumable_id"
+                                        class="block text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">
+                                        Sumber Penuhan (PENTING!)
+                                    </label>
+                                    <p class="text-[10px] text-amber-600 mb-2">
+                                        Pilih barang jika ingin <b>mengambil dari stok gudang</b>. Biarkan KOSONG jika
+                                        ingin <b>membeli baru</b>.
+                                    </p>
+                                    <select name="consumable_id" id="consumable_id"
+                                        class="block w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        <option value="">-- Kosong (Beli Baru / Vendor) --</option>
+                                        @foreach($consumables as $item)
+                                            <option value="{{ $item->id }}">
+                                                {{ $item->name }} (Sisa Stok: {{ $item->details_sum_current_stock ?? 0 }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Admin Note --}}
+                                <div>
+                                    <label for="admin_note" class="block text-sm font-medium text-gray-700">Catatan
+                                        Admin (Opsional)</label>
+                                    <textarea name="admin_note" id="admin_note" rows="2"
+                                        class="mt-1 shadow-sm focus:ring-emerald-500 focus:border-emerald-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                        placeholder="Contoh: Disetujui, ambil di gudang B."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="submit"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Setujui & Proses
+                    </button>
+                    <button type="button"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        onclick="closeApproveModal()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL COMPLETION (STOCK IN) --}}
+<div id="completeModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+            onclick="closeCompleteModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form id="completeForm" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="status" value="completed">
+                <script>
+                    document.getElementById('completeForm').addEventListener('submit', function (e) {
+                        let id = document.getElementById('complete_id').value;
+                        this.action = '/permintaan/' + id + '/status';
+                    });
+                </script>
+                <input type="hidden" id="complete_id" name="id">
+
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div
+                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                Selesaikan Pengadaan (Barang Datang)
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 mb-2">
+                                    Konfirmasi penerimaan barang untuk <span id="modal_complete_item_name"
+                                        class="font-bold text-gray-800">Item</span> sebanyak <span
+                                        id="modal_complete_item_qty" class="font-bold text-gray-800">0</span>.
+                                </p>
+                                {{-- Info Kategori --}}
+                                <div class="bg-indigo-50 border border-indigo-200 rounded-md p-3 mb-4">
+                                    <div class="flex items-center gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-500">Tipe:</span>
+                                            <span id="modal_complete_item_type"
+                                                class="font-bold text-indigo-700">-</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-500">Kategori:</span>
+                                            <span id="modal_complete_item_category"
+                                                class="font-bold text-indigo-700">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
+                                    <label for="consumable_id_complete"
+                                        class="block text-xs font-semibold text-blue-800 uppercase tracking-wider mb-1">
+                                        Input ke Inventaris (Stok Masuk)
+                                    </label>
+                                    <p class="text-[10px] text-blue-600 mb-2">
+                                        Pilih barang di inventaris untuk menambahkan stok baru.
+                                    </p>
+                                    <select name="consumable_id" id="consumable_id_complete"
+                                        class="block w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mb-3">
+                                        <option value="">-- Hanya Selesaikan (Tanpa Tambah Stok) --</option>
+                                        @foreach($consumables as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    {{-- Batch Code & Price Inputs (Hidden by default or shown always) --}}
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-700">Kode Batch</label>
+                                            <input type="text" name="batch_code" id="batch_code" required
+                                                class="mt-1 block w-full text-xs border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                                placeholder="Contoh: PROC-001">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-700">Harga Satuan
+                                                (Rp)</label>
+                                            <input type="number" name="unit_price" id="unit_price" required min="0"
+                                                step="0.01"
+                                                class="mt-1 block w-full text-xs border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="admin_note_complete"
+                                        class="block text-sm font-medium text-gray-700">Catatan (Optional)</label>
+                                    <textarea name="admin_note" id="admin_note_complete" rows="2"
+                                        class="mt-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                        placeholder="Contoh: Barang sudah diterima dalam kondisi baik."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="submit"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Selesaikan & Masuk Stok
+                    </button>
+                    <button type="button"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        onclick="closeCompleteModal()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

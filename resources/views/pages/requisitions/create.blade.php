@@ -1,15 +1,15 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <a href="{{ route('pengadaan.index') }}" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <a href="{{ route('permintaan.index') }}" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </a>
                 <h2 class="font-bold text-xl text-gray-900 leading-tight">
-                    Buat Usulan Baru
+                    Buat Permintaan Baru
                 </h2>
             </div>
         </div>
@@ -17,7 +17,7 @@
 
     <div class="py-12 bg-gray-50/50 min-h-screen">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <form action="{{ route('pengadaan.store') }}" method="POST">
+            <form action="{{ route('permintaan.store') }}" method="POST">
                 @csrf
                 <div class="space-y-6">
 
@@ -195,11 +195,11 @@
 
                     {{-- 3. Action Buttons --}}
                     <div class="flex items-center justify-end gap-4">
-                        <a href="{{ route('pengadaan.index') }}"
+                        <a href="{{ route('permintaan.index') }}"
                             class="text-gray-500 font-bold text-sm hover:text-gray-700 transition-colors">Batal</a>
                         <button type="submit"
                             class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-                            Kirim Usulan Pengadaan
+                            Kirim Permintaan Barang
                         </button>
                     </div>
 

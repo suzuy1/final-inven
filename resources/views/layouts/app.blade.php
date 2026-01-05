@@ -17,6 +17,9 @@
     {{-- Select2 JS (jQuery required) --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    @stack('styles')
+    @stack('scripts')
 </head>
 
 <body class="font-sans antialiased bg-slate-50 text-slate-600">
@@ -34,10 +37,10 @@
         {{-- HEADER: Sembunyikan saat print --}}
         <header
             class="mb-6 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 rounded-xl px-6 py-4 flex justify-between items-center shadow-sm print:hidden">
-            <h2 class="font-bold text-2xl text-slate-800 leading-tight tracking-tight">
+            <div class="flex-grow">
                 {{ $header ?? 'SIM Inventaris' }}
-            </h2>
-            <div class="flex items-center gap-4">
+            </div>
+            <div class="flex items-center gap-4 ml-4">
                 <div class="text-sm text-right hidden sm:block">
                     <div class="font-medium text-slate-700">{{ Auth::user()->name }}</div>
                     <div class="text-xs text-slate-500">{{ Auth::user()->email }}</div>

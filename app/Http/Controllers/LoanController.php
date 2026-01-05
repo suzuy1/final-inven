@@ -31,7 +31,8 @@ class LoanController extends Controller
 
         // --- FILTER STATUS ---
         if ($request->filled('status')) {
-            if ($request->status == \App\Enums\LoanStatus::OVERDUE->value) {
+            // 'overdue' adalah filter value (bukan enum case), untuk cari yang dipinjam + telat
+            if ($request->status == 'overdue') {
                 $query->where('status', \App\Enums\LoanStatus::DIPINJAM)->where('return_date_plan', '<', now());
             } else {
                 $query->where('status', $request->status);
@@ -45,7 +46,8 @@ class LoanController extends Controller
                         WHEN status = '" . \App\Enums\LoanStatus::KEMBALI->value . "' THEN 3 
                         ELSE 2 END")
             ->latest('loan_date')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends(request()->query()); // ✅ Preserve filter saat pagination
 
         return view('pages.loans.index', compact('loans'));
     }
@@ -63,6 +65,12 @@ class LoanController extends Controller
         return view('pages.loans.create', compact('assets'));
     }
 
+    public function show(Loan $loan)
+    {
+        $loan->load(['asset.inventory', 'asset.room']);
+        return view('pages.loans.show', compact('loan'));
+    }
+
     // 3. PROSES SIMPAN PEMINJAMAN
     public function store(Request $request)
     {
@@ -75,35 +83,43 @@ class LoanController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $asset = AssetDetail::findOrFail($request->asset_detail_id);
+        try {
+            DB::transaction(function () use ($request) {
+                // ✅ FIX: Pessimistic locking untuk prevent race condition (double booking)
+                $asset = AssetDetail::lockForUpdate()
+                    ->findOrFail($request->asset_detail_id);
 
-        // Validasi Terakhir: Pastikan barang masih tersedia (mencegah race condition)
-        if ($asset->status != \App\Enums\AssetStatus::TERSEDIA) {
-            return back()->withErrors(['asset_detail_id' => 'Gagal! Barang ini baru saja dipinjam orang lain.']);
+                // Validasi DALAM transaction (setelah lock)
+                if ($asset->status != \App\Enums\AssetStatus::TERSEDIA) {
+                    throw new \Exception('Gagal! Barang ini baru saja dipinjam orang lain.');
+                }
+
+                // Validasi Kondisi: Barang rusak berat tidak boleh dipinjam
+                if ($asset->condition == 'rusak_berat') {
+                    throw new \Exception('Gagal! Barang ini dalam kondisi rusak berat dan tidak dapat dipinjam.');
+                }
+
+                // A. Simpan Data Peminjaman
+                Loan::create([
+                    'asset_detail_id' => $asset->id,
+                    'borrower_name' => $request->borrower_name,
+                    'borrower_id' => $request->borrower_id,
+                    'loan_date' => $request->loan_date,
+                    'return_date_plan' => $request->return_date_plan,
+                    'status' => \App\Enums\LoanStatus::DIPINJAM,
+                    'notes' => $request->notes
+                ]);
+
+                // B. Update Status Aset menjadi 'dipinjam'
+                $asset->update(['status' => \App\Enums\AssetStatus::DIPINJAM]);
+            });
+
+            return redirect()->route('peminjaman.index')
+                ->with('success', 'Peminjaman berhasil dicatat.');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-
-        // Validasi Kondisi: Barang rusak berat tidak boleh dipinjam
-        if ($asset->condition == 'rusak_berat') {
-            return back()->withErrors(['asset_detail_id' => 'Gagal! Barang ini dalam kondisi rusak berat dan tidak dapat dipinjam.']);
-        }
-
-        DB::transaction(function () use ($request, $asset) {
-            // A. Simpan Data Peminjaman
-            Loan::create([
-                'asset_detail_id' => $asset->id,
-                'borrower_name' => $request->borrower_name,
-                'borrower_id' => $request->borrower_id,
-                'loan_date' => $request->loan_date,
-                'return_date_plan' => $request->return_date_plan,
-                'status' => \App\Enums\LoanStatus::DIPINJAM, // Set status awal
-                'notes' => $request->notes
-            ]);
-
-            // B. Update Status Aset menjadi 'dipinjam'
-            $asset->update(['status' => \App\Enums\AssetStatus::DIPINJAM]);
-        });
-
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil dicatat.');
     }
 
     // 4. PROSES PENGEMBALIAN BARANG
@@ -115,24 +131,35 @@ class LoanController extends Controller
         ]);
 
         if ($loan->status == \App\Enums\LoanStatus::KEMBALI) {
-            return back()->withErrors(['Barang ini sudah dikembalikan sebelumnya.']);
+            return back()->with('error', 'Barang ini sudah dikembalikan sebelumnya.');
         }
 
         DB::transaction(function () use ($request, $loan) {
-            // A. Update Data Peminjaman (Selesai)
+            // A. Update Data Peminjaman (Selesai) - Simpan ke kolom terpisah
             $loan->update([
                 'status' => \App\Enums\LoanStatus::KEMBALI,
                 'return_date_actual' => now(),
-                'notes' => $loan->notes . " [Kondisi Balik: " . ucfirst(str_replace('_', ' ', $request->condition_after)) . ". Catatan: " . $request->return_notes . "]"
+                'condition_after' => $request->condition_after,
+                'return_notes' => $request->return_notes
             ]);
 
-            // B. Update Status Aset (Tersedia Kembali + Update Kondisi Fisik)
+            // ✅ FIX: Jangan set TERSEDIA jika rusak berat!
+            // Aset rusak berat harus masuk status RUSAK, bukan TERSEDIA
+            $newStatus = ($request->condition_after == 'rusak_berat')
+                ? \App\Enums\AssetStatus::RUSAK
+                : \App\Enums\AssetStatus::TERSEDIA;
+
+            // B. Update Status Aset + Kondisi Fisik
             $loan->asset->update([
-                'status' => \App\Enums\AssetStatus::TERSEDIA,
+                'status' => $newStatus,
                 'condition' => $request->condition_after
             ]);
         });
 
-        return back()->with('success', 'Barang berhasil dikembalikan dan status aset diperbarui.');
+        $message = ($request->condition_after == 'rusak_berat')
+            ? 'Barang dikembalikan dengan kondisi rusak berat. Status aset diubah menjadi RUSAK.'
+            : 'Barang berhasil dikembalikan dan status aset diperbarui.';
+
+        return back()->with('success', $message);
     }
 }

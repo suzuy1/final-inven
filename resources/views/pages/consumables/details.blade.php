@@ -6,8 +6,6 @@
                 <span class="text-slate-500">{{ $consumable->name }} /</span>
                 <span class="text-slate-800">Kelola Stok</span>
             </div>
-<<<<<<< HEAD
-
             <div class="flex items-center gap-4">
                 <a href="{{ route('bhp.items', $consumable->category_id) }}"
                     class="text-sm text-slate-500 hover:text-slate-700 transition-colors">
@@ -44,12 +42,6 @@
                     </button>
                 </form>
             </div>
-=======
-            <a href="{{ route('bhp.items', $consumable->category_id) }}"
-                class="text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                &larr; Kembali ke Daftar
-            </a>
->>>>>>> origin/main
         </div>
     </x-slot>
 
@@ -73,6 +65,96 @@
                 </a>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Card Stok Tersedia -->
+                <div class="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 
+                            rounded-2xl p-6 shadow-lg shadow-teal-500/10 group hover:-translate-y-1 transition-all duration-300">
+                    
+                    <!-- Decorative Background Elements -->
+                    <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700 ease-out"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl"></div>
+                    
+                    <div class="relative z-10 flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="bg-white/20 text-white p-1.5 rounded-lg backdrop-blur-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-teal-50 text-xs font-bold tracking-wider uppercase">Stok Tersedia</p>
+                            </div>
+                            
+                            <div class="flex items-baseline gap-2 mt-1">
+                                <h3 class="text-4xl font-black text-white tracking-tight drop-shadow-sm">
+                                    {{ $details->sum('current_stock') }}
+                                </h3>
+                                <span class="text-teal-100 font-bold text-lg">Unit</span>
+                            </div>
+                            
+                            <p class="text-teal-50/80 text-xs mt-3 font-medium">
+                                Tersedia di gudang saat ini
+                            </p>
+                        </div>
+                        
+                        <!-- Floating Icon -->
+                        <div class="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center 
+                                    text-white shadow-inner border border-white/20 group-hover:rotate-6 group-hover:bg-white/20 transition-all duration-500">
+                            <svg class="w-7 h-7 drop-shadow-md transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Jumlah Masuk -->
+                <div class="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 
+                            rounded-2xl p-6 shadow-lg shadow-indigo-500/10 group hover:-translate-y-1 transition-all duration-300">
+                    
+                    <!-- Decorative Background Elements -->
+                    <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700 ease-out"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
+                    
+                    <div class="relative z-10 flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="bg-white/20 text-white p-1.5 rounded-lg backdrop-blur-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-indigo-50 text-xs font-bold tracking-wider uppercase">Jumlah Masuk</p>
+                            </div>
+                            
+                            <div class="flex items-baseline gap-2 mt-1">
+                                <h3 class="text-4xl font-black text-white tracking-tight drop-shadow-sm">
+                                    {{ $details->sum('initial_stock') }}
+                                </h3>
+                                <span class="text-indigo-100 font-bold text-lg">Unit</span>
+                            </div>
+                            
+                            <p class="text-indigo-50/80 text-xs mt-3 font-medium">
+                                Total stok yang pernah masuk
+                            </p>
+                        </div>
+                        
+                        <!-- Floating Icon -->
+                        <div class="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center 
+                                    text-white shadow-inner border border-white/20 group-hover:rotate-6 group-hover:bg-white/20 transition-all duration-500">
+                            <svg class="w-7 h-7 drop-shadow-md transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
             <div class="bg-white shadow-sm rounded-xl border border-slate-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-slate-500">
@@ -88,10 +170,7 @@
                                 <th class="px-3 py-3">Lokasi Penyimpanan</th>
                                 <th class="px-3 py-3">Sumber Pendanaan</th>
                                 <th class="px-3 py-3">Keterangan</th>
-<<<<<<< HEAD
                                 <th class="px-3 py-3 text-center">Aksi</th>
-=======
->>>>>>> origin/main
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -163,12 +242,18 @@
                                         @elseif($d->condition == 'rusak')
                                             <span
                                                 class="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-xs font-medium px-2 py-1 rounded-full border border-orange-200">
-                                                ⚠️ Rusak
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                </svg>
+                                                Rusak
                                             </span>
                                         @else
                                             <span
                                                 class="inline-flex items-center gap-1 bg-rose-100 text-rose-700 text-xs font-medium px-2 py-1 rounded-full border border-rose-200">
-                                                ❌ Kadaluarsa
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                                Kadaluarsa
                                             </span>
                                         @endif
                                     </td>
@@ -199,7 +284,6 @@
                                     <td class="px-3 py-3 text-slate-600 text-xs max-w-[100px] truncate">
                                         {{ $d->notes ?? '-' }}
                                     </td>
-<<<<<<< HEAD
 
                                     {{-- Aksi --}}
                                     <td class="px-3 py-3 text-center">
@@ -208,10 +292,12 @@
                                                 class="text-amber-600 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 p-1.5 rounded-lg transition-colors"
                                                 title="Edit Batch Stok">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                                    </path>
                                                 </svg>
                                             </a>
-                                            
+
                                             <form action="{{ route('consumable.destroyBatch', $d->id) }}" method="POST"
                                                 onsubmit="return confirm('Hapus batch stok ini? Tindakan ini tidak dapat dibatalkan.');"
                                                 class="inline-block">
@@ -220,15 +306,17 @@
                                                 <button type="submit"
                                                     class="text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 p-1.5 rounded-lg transition-colors"
                                                     title="Hapus Batch Stok">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                        </path>
                                                     </svg>
                                                 </button>
                                             </form>
                                         </div>
                                     </td>
-=======
->>>>>>> origin/main
                                 </tr>
                             @endforeach
                         </tbody>

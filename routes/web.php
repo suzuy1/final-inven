@@ -13,6 +13,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProcurementController;
+use App\Http\Controllers\RequisitionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MutationController;
 use App\Http\Controllers\DisposalController;
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventaris', [InventoryController::class, 'indexCategories'])->name('inventaris.categories');
     Route::get('/inventaris/kategori/{category}', [InventoryController::class, 'indexItems'])->name('inventaris.items');
     Route::get('/inventaris/create/{category}', [InventoryController::class, 'create'])->name('inventaris.create');
+    // Route::post('/inventaris/store', [InventoryController::class, 'store'])->name('inventaris.store');
     Route::post('/inventaris/store', [InventoryController::class, 'store'])->name('inventaris.store');
     Route::get('/inventaris/{inventaris}/edit', [InventoryController::class, 'edit'])->name('inventaris.edit');
     Route::put('/inventaris/{inventaris}', [InventoryController::class, 'update'])->name('inventaris.update');
@@ -88,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bhp/kategori/{category}', [ConsumableController::class, 'indexItems'])->name('bhp.items');
     Route::get('/bhp/create/{category}', [ConsumableController::class, 'create'])->name('bhp.create');
     Route::post('/bhp/store', [ConsumableController::class, 'store'])->name('bhp.store');
-<<<<<<< HEAD
+
     Route::get('/bhp/{consumable}/edit', [ConsumableController::class, 'edit'])->name('bhp.edit');
     Route::put('/bhp/{consumable}', [ConsumableController::class, 'update'])->name('bhp.update');
     Route::delete('/bhp/{consumable}', [ConsumableController::class, 'destroy'])->name('bhp.destroy');
@@ -99,11 +101,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/bhp/batch/{consumableDetail}', [ConsumableController::class, 'updateBatch'])->name('consumable.updateBatch');
     Route::delete('/bhp/batch/{consumableDetail}', [ConsumableController::class, 'destroyBatch'])->name('consumable.destroyBatch');
 
-=======
-
-    // Detail Batch Stok (Stok Masuk)
-    Route::get('/bhp/create-batch/{consumable}', [ConsumableController::class, 'createBatch'])->name('consumable.createBatch');
->>>>>>> origin/main
     Route::get('/bhp/detail/{consumable}', [ConsumableController::class, 'detail'])->name('consumable.detail');
     Route::post('/bhp/detail/store', [ConsumableController::class, 'storeDetail'])->name('consumable.storeDetail');
 
@@ -114,6 +111,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
     Route::get('/transaksi/keluar', [TransactionController::class, 'create'])->name('transaksi.create');
+    // Route::post('/transaksi/store', [TransactionController::class, 'store'])->name('transaksi.store');
     Route::post('/transaksi/store', [TransactionController::class, 'store'])->name('transaksi.store');
 
 
@@ -126,6 +124,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/peminjaman/store', [LoanController::class, 'store'])->name('peminjaman.store');
     // Route khusus untuk proses pengembalian barang
     Route::put('/peminjaman/return/{loan}', [LoanController::class, 'returnItem'])->name('peminjaman.return');
+    Route::get('/peminjaman/{loan}', [LoanController::class, 'show'])->name('peminjaman.show');
 
     // Mutasi Aset
     Route::get('/mutasi', [MutationController::class, 'index'])->name('mutasi.index');
@@ -140,6 +139,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/disposal/create/{assetDetail}', [DisposalController::class, 'create'])->name('disposals.create');
     Route::post('/disposal/store', [DisposalController::class, 'store'])->name('disposals.store');
     Route::get('/disposal/{disposal}', [DisposalController::class, 'show'])->name('disposals.show');
+    // Route::get('/disposal/{disposal}/review', [DisposalController::class, 'review'])->name('disposals.review');
     Route::get('/disposal/{disposal}/review', [DisposalController::class, 'review'])->name('disposals.review');
     Route::post('/disposal/{disposal}/approve', [DisposalController::class, 'approve'])->name('disposals.approve');
     Route::post('/disposal/{disposal}/reject', [DisposalController::class, 'reject'])->name('disposals.reject');
@@ -147,12 +147,22 @@ Route::middleware('auth')->group(function () {
 
 
     // ======================================================================
-    // 6. USULAN PENGADAAN (Procurement)
+    // 6. PERMINTAAN BARANG (Requisition - Mengurangi Stok)
+    // ======================================================================
+
+    Route::resource('permintaan', RequisitionController::class);
+    // Route khusus untuk update status (ACC/Tolak) oleh Admin
+    Route::put('/permintaan/{requisition}/status', [RequisitionController::class, 'updateStatus'])->name('permintaan.updateStatus');
+
+
+    // ======================================================================
+    // 7. USULAN PENGADAAN (Procurement - Menambah Stok)
     // ======================================================================
 
     Route::resource('pengadaan', ProcurementController::class);
     // Route khusus untuk update status (ACC/Tolak) oleh Admin
     Route::put('/pengadaan/{procurement}/status', [ProcurementController::class, 'updateStatus'])->name('pengadaan.updateStatus');
+
 
 
     // ======================================================================

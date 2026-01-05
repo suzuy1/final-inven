@@ -137,10 +137,10 @@
                             <select name="status"
                                 class="w-full py-3 px-4 rounded-xl border-slate-300 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all hover:border-slate-400"
                                 onchange="this.form.submit()">
-                                <option value="">📋 Semua Status</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⏱️ Pending</option>
-                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>✅ Approved</option>
-                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>❌ Rejected</option>
+                                <option value="">Semua Status</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             </select>
                         </div>
                         <button type="submit"
@@ -251,16 +251,23 @@
                                     <td class="px-6 py-4 text-center">
                                         <x-table.actions>
                                             {{-- DETAIL --}}
-                                            <x-table.action-link href="{{ route('disposals.show', $disposal) }}">
-                                                👁️ Lihat Detail
-                                            </x-table.action-link>
+                                            <x-table.action-link href="{{ route('disposals.show', $disposal) }}" class="flex items-center">
+                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                 </svg>
+                                                 Lihat Detail
+                                             </x-table.action-link>
 
                                             {{-- REVIEW (ADMIN ONLY & PENDING) --}}
                                             @if(auth()->user()->role === 'admin' && $disposal->status->value == 'pending')
                                                 <div class="border-t"></div>
-                                                <x-table.action-link href="{{ route('disposals.review', $disposal) }}" class="hover:bg-rose-50 text-rose-600 font-bold">
-                                                    ⚖️ Review Disposal
-                                                </x-table.action-link>
+                                                <x-table.action-link href="{{ route('disposals.review', $disposal) }}" class="hover:bg-rose-50 text-rose-600 font-bold flex items-center">
+                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                                                     </svg>
+                                                     Review Disposal
+                                                 </x-table.action-link>
                                             @endif
                                         </x-table.actions>
                                     </td>

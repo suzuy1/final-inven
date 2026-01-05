@@ -22,6 +22,6 @@ class Loan extends Model
     // Accessor: Check Overdue
     public function getIsOverdueAttribute()
     {
-        return $this->status == 'dipinjam' && now() > $this->return_date_plan;
+        return $this->status === \App\Enums\LoanStatus::DIPINJAM && now() > $this->return_date_plan;
     }
 }
