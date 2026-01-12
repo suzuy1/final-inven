@@ -24,17 +24,15 @@ class DisposalController extends Controller
         $disposals = $user->role === 'admin'
             ? Disposal::with([
                 'assetDetail' => function ($query) {
-                    $query->withTrashed();
+                    $query->withTrashed()->with('inventory');
                 },
-                'assetDetail.inventory',
                 'requester',
                 'reviewer'
             ])->latest()->paginate(20)->appends(request()->query())
             : Disposal::with([
                 'assetDetail' => function ($query) {
-                    $query->withTrashed();
+                    $query->withTrashed()->with('inventory');
                 },
-                'assetDetail.inventory',
                 'reviewer'
             ])->where('requested_by', $user->id)->latest()->paginate(20)->appends(request()->query());
 
@@ -279,9 +277,8 @@ class DisposalController extends Controller
         $query = Disposal::approved()
             ->with([
                 'assetDetail' => function ($q) {
-                    $q->withTrashed();
+                    $q->withTrashed()->with('inventory');
                 },
-                'assetDetail.inventory',
                 'requester',
                 'reviewer'
             ]);

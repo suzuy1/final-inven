@@ -252,23 +252,23 @@
             @forelse($disposals as $index => $disposal)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $disposal->assetDetail->unit_code }}</td>
-                    <td>{{ $disposal->assetDetail->inventory->name }}</td>
+                    <td>{{ $disposal->assetDetail?->unit_code ?? 'N/A' }}</td>
+                    <td>{{ $disposal->assetDetail?->inventory?->name ?? 'N/A' }}</td>
                     <td>
-                        <span class="type-badge">{{ $disposal->disposal_type->label() }}</span>
+                        <span class="type-badge">{{ $disposal->disposal_type?->label() ?? 'N/A' }}</span>
                     </td>
                     <td class="text-right">
-                        Rp {{ number_format($disposal->book_value ?? $disposal->assetDetail->price, 0, ',', '.') }}
+                        Rp {{ number_format($disposal->book_value ?? $disposal->assetDetail?->price ?? 0, 0, ',', '.') }}
                     </td>
                     <td class="text-center">
-                        {{ \Carbon\Carbon::parse($disposal->approved_at)->format('d/m/Y') }}
+                        {{ $disposal->approved_at ? \Carbon\Carbon::parse($disposal->approved_at)->format('d/m/Y') : '-' }}
                     </td>
                     <td class="text-center">
-                        <span class="status-badge status-{{ $disposal->status->value }}">
-                            {{ $disposal->status->label() }}
+                        <span class="status-badge status-{{ $disposal->status?->value ?? 'pending' }}">
+                            {{ $disposal->status?->label() ?? 'N/A' }}
                         </span>
                     </td>
-                    <td>{{ $disposal->reviewer->name ?? '-' }}</td>
+                    <td>{{ $disposal->reviewer?->name ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>
@@ -295,12 +295,12 @@
         @foreach($disposals as $disposal)
             <div style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 15px; border-radius: 4px;">
                 <h4 style="margin: 0 0 10px 0; color: #1e293b;">
-                    {{ $disposal->assetDetail->unit_code }} - {{ $disposal->assetDetail->inventory->name }}
+                    {{ $disposal->assetDetail?->unit_code ?? 'N/A' }} - {{ $disposal->assetDetail?->inventory?->name ?? 'N/A' }}
                 </h4>
                 <div style="display: table; width: 100%; font-size: 9pt;">
                     <div style="display: table-row;">
                         <div style="display: table-cell; width: 30%; padding: 3px 0; font-weight: bold;">Tipe Disposal:</div>
-                        <div style="display: table-cell; padding: 3px 0;">{{ $disposal->disposal_type->label() }}</div>
+                        <div style="display: table-cell; padding: 3px 0;">{{ $disposal->disposal_type?->label() ?? 'N/A' }}</div>
                     </div>
                     <div style="display: table-row;">
                         <div style="display: table-cell; padding: 3px 0; font-weight: bold;">Alasan:</div>
@@ -308,11 +308,11 @@
                     </div>
                     <div style="display: table-row;">
                         <div style="display: table-cell; padding: 3px 0; font-weight: bold;">Diajukan oleh:</div>
-                        <div style="display: table-cell; padding: 3px 0;">{{ $disposal->requester->name }}</div>
+                        <div style="display: table-cell; padding: 3px 0;">{{ $disposal->requester?->name ?? 'N/A' }}</div>
                     </div>
                     <div style="display: table-row;">
                         <div style="display: table-cell; padding: 3px 0; font-weight: bold;">Disetujui oleh:</div>
-                        <div style="display: table-cell; padding: 3px 0;">{{ $disposal->reviewer->name ?? '-' }}</div>
+                        <div style="display: table-cell; padding: 3px 0;">{{ $disposal->reviewer?->name ?? '-' }}</div>
                     </div>
                     @if($disposal->notes)
                         <div style="display: table-row;">

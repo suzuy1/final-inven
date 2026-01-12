@@ -197,7 +197,8 @@
                                             </div>
                                             @if($req->description)
                                                 <p class="text-xs text-gray-400 mt-1 truncate max-w-[150px]">
-                                                    {{ $req->description }}</p>
+                                                    {{ $req->description }}
+                                                </p>
                                             @endif
                                         </div>
                                     </td>
@@ -386,79 +387,69 @@
         </main>
     </div>
 
-    {{-- Script & Modals (Paste script dan modals JS dari kode sebelumnya di sini tanpa perubahan logika) --}}
-    {{-- Saya asumsikan bagian
-    <script> dan < div > modal tetap sama, hanya class CSS di dalam modal yang perlu disesuaikan dengan tone baru jika mau--}}
 
-        {
-            {
-                --Untuk menghemat tempat di sini, pastikan kamu menyertakan kembali blok < script >...</script>
-    dan blok Modal di bawah sini dari kodemu yang asli. Logika ID dan Form Action-nya kritikal. --}}
     <script>
-            // ... (Paste your existing JS logic here)
-            // 1. REJECT LOGIC
-            function openRejectModal(id) {
-                let reason = prompt("Masukkan alasan penolakan (Wajib diisi):");
-                if (reason !== null && reason.trim() !== "") {
-                    submitStatusForm(id, 'rejected', reason);
-                } else if (reason !== null) {
-                    alert("Alasan penolakan tidak boleh kosong.");
-                }
+
+        // 1. REJECT LOGIC
+        function openRejectModal(id) {
+            let reason = prompt("Masukkan alasan penolakan (Wajib diisi):");
+            if (reason !== null && reason.trim() !== "") {
+                submitStatusForm(id, 'rejected', reason);
+            } else if (reason !== null) {
+                alert("Alasan penolakan tidak boleh kosong.");
             }
+        }
 
-            // 2. APPROVE LOGIC (MODAL)
-            function openApproveModal(id, itemName, qty, itemType, categoryName) {
-                document.getElementById('approve_id').value = id;
-                document.getElementById('modal_item_name').innerText = itemName;
-                document.getElementById('modal_item_qty').innerText = qty; // removed ' Unit' duplication
-                document.getElementById('modal_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'BHP';
-                document.getElementById('modal_item_category').innerText = categoryName;
-                document.getElementById('approveModal').classList.remove('hidden');
+        // 2. APPROVE LOGIC (MODAL)
+        function openApproveModal(id, itemName, qty, itemType, categoryName) {
+            document.getElementById('approve_id').value = id;
+            document.getElementById('modal_item_name').innerText = itemName;
+            document.getElementById('modal_item_qty').innerText = qty; // removed ' Unit' duplication
+            document.getElementById('modal_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'BHP';
+            document.getElementById('modal_item_category').innerText = categoryName;
+            document.getElementById('approveModal').classList.remove('hidden');
+        }
+
+        function closeApproveModal() {
+            document.getElementById('approveModal').classList.add('hidden');
+        }
+
+        // 3. COMPLETE LOGIC (MODAL)
+        function openCompleteModal(id, itemName, qty, price, itemType, categoryName) {
+            document.getElementById('complete_id').value = id;
+            document.getElementById('modal_complete_item_name').innerText = itemName;
+            document.getElementById('modal_complete_item_qty').innerText = qty;
+            document.getElementById('modal_complete_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'BHP';
+            document.getElementById('modal_complete_item_category').innerText = categoryName;
+
+            let today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+            document.getElementById('batch_code').value = 'PROC-' + id + '-' + today;
+            document.getElementById('unit_price').value = price;
+
+            document.getElementById('completeModal').classList.remove('hidden');
+        }
+
+        function closeCompleteModal() {
+            document.getElementById('completeModal').classList.add('hidden');
+        }
+
+        function submitStatusForm(id, status, note = null) {
+            let form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/pengadaan/' + id + '/status';
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            let hiddenMethod = document.createElement('input'); hiddenMethod.type = 'hidden'; hiddenMethod.name = '_method'; hiddenMethod.value = 'PUT'; form.appendChild(hiddenMethod);
+            let hiddenCsrf = document.createElement('input'); hiddenCsrf.type = 'hidden'; hiddenCsrf.name = '_token'; hiddenCsrf.value = csrfToken; form.appendChild(hiddenCsrf);
+            let hiddenStatus = document.createElement('input'); hiddenStatus.type = 'hidden'; hiddenStatus.name = 'status'; hiddenStatus.value = status; form.appendChild(hiddenStatus);
+            if (note) {
+                let hiddenNote = document.createElement('input'); hiddenNote.type = 'hidden'; hiddenNote.name = 'admin_note'; hiddenNote.value = note; form.appendChild(hiddenNote);
             }
-
-            function closeApproveModal() {
-                document.getElementById('approveModal').classList.add('hidden');
-            }
-
-            // 3. COMPLETE LOGIC (MODAL)
-            function openCompleteModal(id, itemName, qty, price, itemType, categoryName) {
-                document.getElementById('complete_id').value = id;
-                document.getElementById('modal_complete_item_name').innerText = itemName;
-                document.getElementById('modal_complete_item_qty').innerText = qty;
-                document.getElementById('modal_complete_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'BHP';
-                document.getElementById('modal_complete_item_category').innerText = categoryName;
-
-                let today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-                document.getElementById('batch_code').value = 'PROC-' + id + '-' + today;
-                document.getElementById('unit_price').value = price;
-
-                document.getElementById('completeModal').classList.remove('hidden');
-            }
-
-            function closeCompleteModal() {
-                document.getElementById('completeModal').classList.add('hidden');
-            }
-
-            function submitStatusForm(id, status, note = null) {
-                let form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/pengadaan/' + id + '/status';
-                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                let hiddenMethod = document.createElement('input'); hiddenMethod.type = 'hidden'; hiddenMethod.name = '_method'; hiddenMethod.value = 'PUT'; form.appendChild(hiddenMethod);
-                let hiddenCsrf = document.createElement('input'); hiddenCsrf.type = 'hidden'; hiddenCsrf.name = '_token'; hiddenCsrf.value = csrfToken; form.appendChild(hiddenCsrf);
-                let hiddenStatus = document.createElement('input'); hiddenStatus.type = 'hidden'; hiddenStatus.name = 'status'; hiddenStatus.value = status; form.appendChild(hiddenStatus);
-                if (note) {
-                    let hiddenNote = document.createElement('input'); hiddenNote.type = 'hidden'; hiddenNote.name = 'admin_note'; hiddenNote.value = note; form.appendChild(hiddenNote);
-                }
-                document.body.appendChild(form);
-                form.submit();
-            }
+            document.body.appendChild(form);
+            form.submit();
+        }
     </script>
 
-    {{-- Sertakan juga blok div Modal Approve & Complete di sini. --}}
-    {{-- Tips: Ubah tombol di modal dari warna solid berat ke style yang konsisten dengan tema di atas jika sempat. --}}
     @include('components.modals-procurement')
-    {{-- Asumsi saya kamu punya modals terpisah atau paste kode modal lama di sini --}}
 
 </x-app-layout>

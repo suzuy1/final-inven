@@ -88,7 +88,7 @@
                                     Kondisi
                                 </label>
                                 <div class="mt-2 text-sm text-slate-600 bg-white px-3 py-2.5 rounded-xl border-2 border-slate-100 shadow-sm group-hover:border-slate-200 transition-colors">
-                                    {{ ucfirst(str_replace('_', ' ', $assetDetail->condition)) }}
+                                    {{ $assetDetail->condition->label() }}
                                 </div>
                             </div>
                             <div class="group">

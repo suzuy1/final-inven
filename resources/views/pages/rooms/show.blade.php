@@ -135,14 +135,14 @@
                                         <td class="px-6 py-4 text-center">
                                             @php
                                                 $condColor = match($asset->condition) {
-                                                    'baik' => 'bg-emerald-100 text-emerald-700',
-                                                    'rusak-ringan' => 'bg-amber-100 text-amber-700',
-                                                    'rusak-berat' => 'bg-rose-100 text-rose-700',
+                                                    \App\Enums\AssetCondition::BAIK => 'bg-emerald-100 text-emerald-700',
+                                                    \App\Enums\AssetCondition::RUSAK_RINGAN => 'bg-amber-100 text-amber-700',
+                                                    \App\Enums\AssetCondition::RUSAK_BERAT => 'bg-rose-100 text-rose-700',
                                                     default => 'bg-gray-100 text-gray-600'
                                                 };
                                             @endphp
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium {{ $condColor }}">
-                                                {{ ucfirst(str_replace('-', ' ', $asset->condition)) }}
+                                                {{ $asset->condition->label() }}
                                             </span>
                                         </td>
                                     </tr>
