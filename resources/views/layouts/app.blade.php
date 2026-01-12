@@ -22,7 +22,34 @@
     @stack('scripts')
 </head>
 
-<body class="font-sans antialiased bg-slate-50 text-slate-600">
+<body class="font-sans antialiased bg-slate-50 text-slate-600" x-data="{ sidebarOpen: false, pageLoading: false }">
+
+    {{-- MODERN LOADING INDICATOR --}}
+    <template x-if="pageLoading">
+        <div class="print:hidden">
+            {{-- Top Progress Bar (YouTube/Instagram style) --}}
+            <div class="fixed top-0 left-0 right-0 z-[100] h-1 bg-indigo-100/50">
+                <div class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 loading-progress"></div>
+            </div>
+
+            {{-- Floating Loader (glassmorphism) --}}
+            <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] sm:bottom-8">
+                <div
+                    class="bg-white/90 backdrop-blur-xl rounded-full px-5 py-3 shadow-xl border border-white/50 flex items-center gap-3">
+                    {{-- Bouncing Dots --}}
+                    <div class="flex items-center gap-1">
+                        <span class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
+                            style="animation-delay: 0ms;"></span>
+                        <span class="w-2 h-2 bg-purple-500 rounded-full animate-bounce"
+                            style="animation-delay: 150ms;"></span>
+                        <span class="w-2 h-2 bg-pink-500 rounded-full animate-bounce"
+                            style="animation-delay: 300ms;"></span>
+                    </div>
+                    <span class="text-sm font-medium text-slate-600">Memuat</span>
+                </div>
+            </div>
+        </div>
+    </template>
 
     {{-- WRAPPER SIDEBAR: Sembunyikan total saat print --}}
     <div class="print:hidden">
@@ -32,21 +59,38 @@
     {{-- MAIN CONTENT WRAPPER --}}
     {{-- Perhatikan penambahan class: print:ml-0 print:p-0 --}}
     <div id="main-content"
-        class="p-4 sm:ml-64 min-h-screen flex flex-col print:ml-0 print:p-0 transition-all duration-300">
+        class="p-2 sm:p-4 sm:ml-64 min-h-screen flex flex-col print:ml-0 print:p-0 transition-all duration-300">
 
         {{-- HEADER: Sembunyikan saat print --}}
         <header
-            class="mb-6 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 rounded-xl px-6 py-4 flex justify-between items-center shadow-sm print:hidden">
-            <div class="flex-grow">
-                {{ $header ?? 'SIM Inventaris' }}
+            class="mb-3 sm:mb-6 bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 rounded-lg sm:rounded-xl px-3 sm:px-6 py-2 sm:py-4 flex justify-between items-center shadow-sm print:hidden">
+
+            {{-- Left Side: Hamburger + Title --}}
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                {{-- Mobile Hamburger Button --}}
+                <button @click="sidebarOpen = true"
+                    class="sm:hidden p-1.5 -ml-1 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0"
+                    aria-label="Open sidebar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                {{-- Page Title/Header - Truncate on mobile --}}
+                <div class="flex-1 min-w-0 text-sm sm:text-base truncate">
+                    {{ $header ?? 'SIM Inventaris' }}
+                </div>
             </div>
-            <div class="flex items-center gap-4 ml-4">
+
+            {{-- Right Side: User Info (Compact on mobile) --}}
+            <div class="flex items-center gap-2 sm:gap-4 ml-2 sm:ml-4 flex-shrink-0">
                 <div class="text-sm text-right hidden sm:block">
                     <div class="font-medium text-slate-700">{{ Auth::user()->name }}</div>
                     <div class="text-xs text-slate-500">{{ Auth::user()->email }}</div>
                 </div>
                 <div
-                    class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg border-2 border-white shadow-sm">
+                    class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm sm:text-lg border-2 border-white shadow-sm">
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
             </div>
@@ -98,6 +142,57 @@
             &copy; {{ date('Y') }} SIM Inventaris. All rights reserved.
         </footer>
     </div>
+
+    {{-- Navigation Loading Script --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get Alpine component data
+            const body = document.body;
+
+            // Listen for clicks on navigation links
+            document.addEventListener('click', function (e) {
+                const link = e.target.closest('a');
+
+                // Check if it's a valid navigation link
+                if (link &&
+                    link.href &&
+                    !link.href.startsWith('#') &&
+                    !link.href.startsWith('javascript:') &&
+                    !link.hasAttribute('download') &&
+                    link.target !== '_blank' &&
+                    !link.href.includes('logout') &&
+                    link.href.startsWith(window.location.origin)) {
+
+                    // Show loading overlay via Alpine
+                    if (typeof Alpine !== 'undefined') {
+                        Alpine.store('loading', true);
+                        body._x_dataStack[0].pageLoading = true;
+
+                        // Also close sidebar on mobile
+                        body._x_dataStack[0].sidebarOpen = false;
+                    }
+                }
+            });
+
+            // Handle form submissions
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                // Don't show loading for forms with file uploads (they have their own progress)
+                if (!form.querySelector('input[type="file"]')) {
+                    if (typeof Alpine !== 'undefined' && body._x_dataStack) {
+                        body._x_dataStack[0].pageLoading = true;
+                    }
+                }
+            });
+
+            // Hide loading when page is fully loaded (for back/forward navigation)
+            window.addEventListener('pageshow', function (e) {
+                if (e.persisted && typeof Alpine !== 'undefined' && body._x_dataStack) {
+                    body._x_dataStack[0].pageLoading = false;
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

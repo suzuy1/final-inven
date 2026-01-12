@@ -140,6 +140,26 @@
                             @enderror
                         </div>
 
+                        {{-- Estimated Value --}}
+                        <div id="financial_info" class="bg-gradient-to-br from-emerald-50 to-white rounded-2xl p-6 border-2 border-emerald-100 shadow-sm transition-all duration-300">
+                            <label for="estimated_value" class="block text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Estimasi Nilai Kompensasi / Harga Jual
+                                <span class="text-xs font-normal text-emerald-600">(Opsional)</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <span class="text-emerald-600 font-bold">Rp</span>
+                                </div>
+                                <input type="number" id="estimated_value" name="estimated_value" min="0" step="1" value="{{ old('estimated_value', 0) }}"
+                                    class="w-full pl-12 rounded-xl border-2 border-emerald-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 text-lg font-bold text-emerald-700"
+                                    placeholder="0">
+                            </div>
+                            <p class="mt-2 text-[10px] text-emerald-600 font-medium">Isi jika aset dijual, ditukar, atau ada klaim asuransi (misal: ganti rugi aset hilang).</p>
+                        </div>
+
                         {{-- Reason --}}
                         <div>
                             <label for="reason" class="block text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
@@ -177,8 +197,8 @@
                                 <span class="text-xs font-normal text-slate-500">(Max 2MB, format: JPG, PNG)</span>
                             </label>
                             
-                            <div id="dropZone" class="relative border-3 border-dashed border-slate-300 rounded-2xl p-8 text-center transition-all duration-300 hover:border-red-400 hover:bg-red-50/50 cursor-pointer group">
-                                <input type="file" id="evidence_photo" name="evidence_photo" accept="image/jpeg,image/png,image/jpg" required class="hidden">
+                            <label id="dropZone" for="evidence_photo" class="relative block border-3 border-dashed border-slate-300 rounded-2xl p-8 text-center transition-all duration-300 hover:border-red-400 hover:bg-red-50/50 cursor-pointer group">
+                                <input type="file" id="evidence_photo" name="evidence_photo" accept="image/jpeg,image/png,image/jpg" required class="sr-only">
                                 
                                 <div id="uploadPrompt" class="space-y-4">
                                     <div class="w-20 h-20 mx-auto bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -200,7 +220,7 @@
                                         Ganti Foto
                                     </button>
                                 </div>
-                            </div>
+                            </label>
 
                             @error('evidence_photo')
                                 <p class="mt-2 text-xs text-red-600 flex items-center gap-1">
@@ -273,8 +293,8 @@
         const preview = document.getElementById('preview');
         const removeBtn = document.getElementById('removeImage');
 
-        // Click to browse
-        dropZone.addEventListener('click', () => photoInput.click());
+        // JS click trigger removed because we now use <label for="...">
+        // which handles the click natively and more reliably.
 
         // Drag & Drop events
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

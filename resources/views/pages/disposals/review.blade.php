@@ -23,8 +23,15 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-3xl font-bold text-slate-900 tracking-tight">Review Disposal Aset</h3>
-                        <p class="text-slate-500 text-sm mt-1">Periksa detail disposal dan berikan keputusan</p>
+                        <div class="flex items-center gap-3">
+                            <h3 class="text-3xl font-bold text-slate-900 tracking-tight">Review Disposal Aset</h3>
+                            <span
+                                class="px-3 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-widest rounded-full border border-indigo-200 shadow-sm">Reviewer
+                                Independen</span>
+                        </div>
+                        <p class="text-slate-500 text-sm mt-1">Anda sedang meninjau pengajuan disposal dari
+                            <b>{{ $disposal->requester->name }}</b>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -84,40 +91,47 @@
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Kode
                                         Aset</label>
                                     <div class="text-2xl font-mono font-bold text-red-600">
-                                        {{ $disposal->assetDetail->unit_code }}</div>
+                                        {{ $disposal->assetDetail->unit_code }}
+                                    </div>
                                 </div>
                                 <div class="col-span-2 bg-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
                                     <label
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Nama
                                         Aset</label>
                                     <div class="text-lg font-bold text-slate-800">
-                                        {{ $disposal->assetDetail->inventory->name }}</div>
+                                        {{ $disposal->assetDetail->inventory->name }}
+                                    </div>
                                 </div>
                                 <div class="bg-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
                                     <label
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Model/Tipe</label>
                                     <div class="text-sm text-slate-600 font-medium">
-                                        {{ $disposal->assetDetail->model ?? '-' }}</div>
+                                        {{ $disposal->assetDetail->model ?? '-' }}
+                                    </div>
                                 </div>
                                 <div class="bg-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
                                     <label
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Kategori</label>
                                     <div class="text-sm text-slate-600 font-medium">
-                                        {{ $disposal->assetDetail->inventory->category->name }}</div>
+                                        {{ $disposal->assetDetail->inventory->category->name }}
+                                    </div>
                                 </div>
                                 <div class="bg-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
                                     <label
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Lokasi</label>
                                     <div class="text-sm text-slate-600 font-medium">
-                                        {{ $disposal->assetDetail->room->name }}</div>
+                                        {{ $disposal->assetDetail->room->name }}
+                                    </div>
                                     <div class="text-xs text-slate-400 mt-1">
-                                        {{ $disposal->assetDetail->room->unit->name }}</div>
+                                        {{ $disposal->assetDetail->room->unit->name }}
+                                    </div>
                                 </div>
                                 <div class="bg-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
                                     <label
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Kondisi</label>
                                     <div class="text-sm text-slate-600 font-medium">
-                                        {{ ucfirst(str_replace('_', ' ', $disposal->assetDetail->condition)) }}</div>
+                                        {{ ucfirst(str_replace('_', ' ', $disposal->assetDetail->condition)) }}
+                                    </div>
                                 </div>
                                 <div class="bg-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
                                     <label
@@ -132,7 +146,8 @@
                                         class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Sumber
                                         Dana</label>
                                     <div class="text-sm text-slate-600 font-medium">
-                                        {{ $disposal->assetDetail->fundingSource->name ?? '-' }}</div>
+                                        {{ $disposal->assetDetail->fundingSource->name ?? '-' }}
+                                    </div>
                                 </div>
                                 <div
                                     class="col-span-2 bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border-2 border-emerald-200 shadow-sm">
@@ -167,175 +182,197 @@
                                 <span
                                     class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-{{ $disposal->disposal_type->color() }}-50 text-{{ $disposal->disposal_type->color() }}-700 border-2 border-{{ $disposal->disposal_type->color() }}-200">
                                     {{ $disposal->disposal_type->label() }}
-                                </span>
-                            </div>
+                            </span>
+                        </div>
+                        @if($disposal->estimated_value > 0)
                             <div
-                                class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
+                                class="bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border-2 border-emerald-100 shadow-sm">
                                 <label
-                                    class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Alasan
-                                    Disposal</label>
-                                <p class="text-sm text-slate-700 leading-relaxed">{{ $disposal->reason }}</p>
-                            </div>
-                            <div
-                                class="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-4 border-2 border-indigo-100 shadow-sm">
-                                <label
-                                    class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-2 block">Diajukan
-                                    Oleh</label>
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow">
-                                        {{ substr($disposal->requester->name, 0, 1) }}
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-bold text-slate-800">{{ $disposal->requester->name }}
-                                        </div>
-                                        <div class="text-xs text-slate-500">{{ $disposal->requester->email }}</div>
-                                        <div class="text-xs text-slate-400 mt-1">
-                                            {{ \Carbon\Carbon::parse($disposal->created_at)->format('d M Y, H:i') }}
-                                        </div>
-                                    </div>
+                                    class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">Estimasi
+                                    Nilai Kompensasi</label>
+                                <div class="text-lg font-bold text-emerald-600">
+                                    Rp {{ number_format($disposal->estimated_value, 0, ',', '.') }}
                                 </div>
                             </div>
+                        @endif
+                        <div
+                            class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border-2 border-slate-100 shadow-sm">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Alasan
+                                Disposal</label>
+                            <p class="text-sm text-slate-700 leading-relaxed">{{ $disposal->reason }}</p>
                         </div>
-                    </div>
-
-                    {{-- EVIDENCE PHOTO --}}
-                    <div class="bg-white shadow-lg rounded-2xl border border-slate-200 overflow-hidden">
-                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
-                            <h4 class="font-bold text-white flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Foto Bukti Kondisi Aset
-                            </h4>
-                        </div>
-                        <div class="p-6">
-                            <div class="relative group cursor-pointer" onclick="openLightbox()">
-                                <img src="{{ Storage::url($disposal->evidence_photo) }}" alt="Evidence Photo"
-                                    class="w-full rounded-xl shadow-lg border-4 border-white group-hover:shadow-2xl transition-all duration-300">
+                        <div
+                            class="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-4 border-2 border-indigo-100 shadow-sm">
+                            <label
+                                class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-2 block">Diajukan
+                                Oleh</label>
+                            <div class="flex items-center gap-3">
                                 <div
-                                    class="absolute inset-0 bg-black/0 group-hover:bg-black/40 rounded-xl transition-all duration-300 flex items-center justify-center">
-                                    <div
-                                        class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white rounded-full p-4 shadow-xl">
-                                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7">
-                                            </path>
-                                        </svg>
+                                    class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow">
+                                    {{ substr($disposal->requester->name, 0, 1) }}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800">{{ $disposal->requester->name }}
+                                    </div>
+                                    <div class="text-xs text-slate-500">{{ $disposal->requester->email }}</div>
+                                    <div class="text-xs text-slate-400 mt-1">
+                                        {{ \Carbon\Carbon::parse($disposal->created_at)->format('d M Y, H:i') }}
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-500 text-center mt-3">Klik untuk memperbesar</p>
                         </div>
                     </div>
                 </div>
 
-                {{-- RIGHT COLUMN - ACTIONS --}}
-                <div class="lg:col-span-1 space-y-6">
-
-                    {{-- APPROVE FORM --}}
-                    <div
-                        class="bg-white shadow-lg rounded-2xl border-2 border-emerald-200 overflow-hidden sticky top-6">
-                        <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4">
-                            <h4 class="font-bold text-white flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Setujui Disposal
-                            </h4>
-                        </div>
-                        <form action="{{ route('disposals.approve', $disposal) }}" method="POST" id="approveForm"
-                            class="p-6 space-y-4">
-                            @csrf
-                            <div>
-                                <label for="approve_notes" class="block text-sm font-bold text-slate-700 mb-2">
-                                    Catatan Admin <span class="text-xs font-normal text-slate-500">(Opsional)</span>
-                                </label>
-                                <textarea id="approve_notes" name="notes" rows="4"
-                                    class="w-full rounded-xl border-2 border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 text-sm"
-                                    placeholder="Catatan tambahan untuk persetujuan..."></textarea>
-                            </div>
-
+                {{-- EVIDENCE PHOTO --}}
+                <div class="bg-white shadow-lg rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
+                        <h4 class="font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            Foto Bukti Kondisi Aset
+                        </h4>
+                    </div>
+                    <div class="p-6">
+                        <div class="relative group cursor-pointer" onclick="openLightbox()">
+                            <img src="{{ Storage::url($disposal->evidence_photo) }}" alt="Evidence Photo"
+                                class="w-full rounded-xl shadow-lg border-4 border-white group-hover:shadow-2xl transition-all duration-300">
                             <div
-                                class="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-xl p-4">
-                                <div class="flex items-start gap-3">
-                                    <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
+                                class="absolute inset-0 bg-black/0 group-hover:bg-black/40 rounded-xl transition-all duration-300 flex items-center justify-center">
+                                <div
+                                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white rounded-full p-4 shadow-xl">
+                                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7">
                                         </path>
                                     </svg>
-                                    <div class="text-xs text-red-800 leading-relaxed">
-                                        <strong class="block mb-1">Perhatian!</strong>
-                                        Menyetujui disposal akan menghapus aset dari sistem (soft delete). Aset tidak
-                                        dapat dikembalikan setelah disetujui.
-                                    </div>
                                 </div>
                             </div>
-
-                            <button type="button" onclick="confirmApprove()"
-                                class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl font-bold hover:from-emerald-700 hover:to-emerald-800 shadow-lg shadow-emerald-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Setujui Disposal
-                            </button>
-                        </form>
-                    </div>
-
-                    {{-- REJECT FORM --}}
-                    <div class="bg-white shadow-lg rounded-2xl border-2 border-rose-200 overflow-hidden">
-                        <div class="bg-gradient-to-r from-rose-500 to-rose-600 px-6 py-4">
-                            <h4 class="font-bold text-white flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                Tolak Disposal
-                            </h4>
                         </div>
-                        <form action="{{ route('disposals.reject', $disposal) }}" method="POST" id="rejectForm"
-                            class="p-6 space-y-4">
-                            @csrf
-                            <div>
-                                <label for="rejection_reason"
-                                    class="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-1">
-                                    <span class="text-red-500">*</span>
-                                    Alasan Penolakan
-                                    <span class="text-xs font-normal text-slate-500">(Min 10 karakter)</span>
-                                </label>
-                                <textarea id="rejection_reason" name="rejection_reason" rows="4" required minlength="10"
-                                    class="w-full rounded-xl border-2 border-slate-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all py-3 px-4 text-sm @error('rejection_reason') border-red-500 @enderror"
-                                    placeholder="Jelaskan alasan penolakan disposal..."></textarea>
-                                @error('rejection_reason')
-                                    <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <button type="button" onclick="confirmReject()"
-                                class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-xl font-bold hover:from-rose-700 hover:to-rose-800 shadow-lg shadow-rose-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                Tolak Disposal
-                            </button>
-                        </form>
+                        <p class="text-xs text-slate-500 text-center mt-3">Klik untuk memperbesar</p>
                     </div>
-
-                    {{-- BACK BUTTON --}}
-                    <a href="{{ route('disposals.index') }}"
-                        class="block w-full text-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-all duration-300">
-                        ← Kembali ke Daftar
-                    </a>
                 </div>
             </div>
+
+            {{-- RIGHT COLUMN - ACTIONS --}}
+            <div class="lg:col-span-1 space-y-6">
+
+                {{-- APPROVE FORM --}}
+                <div class="bg-white shadow-lg rounded-2xl border-2 border-emerald-200 overflow-hidden sticky top-6">
+                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4">
+                        <h4 class="font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Setujui Disposal
+                        </h4>
+                    </div>
+                    <form action="{{ route('disposals.approve', $disposal) }}" method="POST" id="approveForm"
+                        class="p-6 space-y-4">
+                        @csrf
+                        <div>
+                            <label for="approve_notes" class="block text-sm font-bold text-slate-700 mb-2">
+                                Catatan Persetujuan <span class="text-xs font-normal text-slate-500">(Opsional tapi
+                                    disarankan)</span>
+                            </label>
+                            <textarea id="approve_notes" name="notes" rows="4"
+                                class="w-full rounded-xl border-2 border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 text-sm"
+                                placeholder="Jelaskan mengapa Anda setuju dengan penghapusan aset ini..."></textarea>
+                        </div>
+
+                        <div class="bg-emerald-50 rounded-xl p-4 border-2 border-emerald-100">
+                            <label for="realized_value" class="block text-sm font-bold text-emerald-800 mb-2">
+                                Nilai Realisasi Akhir
+                                <span class="text-xs font-normal text-emerald-600">(Rp)</span>
+                            </label>
+                            <input type="number" id="realized_value" name="realized_value"
+                                value="{{ old('realized_value', $disposal->estimated_value) }}"
+                                class="w-full rounded-lg border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500 py-2 font-bold text-emerald-700"
+                                placeholder="0">
+                            <p class="mt-1 text-[10px] text-emerald-500 leading-tight">Gunakan nilai ini jika harga
+                                jual/kompensasi berbeda dari estimasi.</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                    </path>
+                                </svg>
+                                <div class="text-xs text-red-800 leading-relaxed">
+                                    <strong class="block mb-1">Perhatian!</strong>
+                                    Menyetujui disposal akan menghapus aset dari sistem (soft delete). Aset tidak
+                                    dapat dikembalikan setelah disetujui.
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="confirmApprove()"
+                            class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl font-bold hover:from-emerald-700 hover:to-emerald-800 shadow-lg shadow-emerald-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Setujui Disposal
+                        </button>
+                    </form>
+                </div>
+
+                {{-- REJECT FORM --}}
+                <div class="bg-white shadow-lg rounded-2xl border-2 border-rose-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-rose-500 to-rose-600 px-6 py-4">
+                        <h4 class="font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Tolak Disposal
+                        </h4>
+                    </div>
+                    <form action="{{ route('disposals.reject', $disposal) }}" method="POST" id="rejectForm"
+                        class="p-6 space-y-4">
+                        @csrf
+                        <div>
+                            <label for="rejection_reason"
+                                class="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-1">
+                                <span class="text-red-500">*</span>
+                                Alasan Penolakan
+                                <span class="text-xs font-normal text-slate-500">(Min 10 karakter)</span>
+                            </label>
+                            <textarea id="rejection_reason" name="rejection_reason" rows="4" required minlength="10"
+                                class="w-full rounded-xl border-2 border-slate-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all py-3 px-4 text-sm @error('rejection_reason') border-red-500 @enderror"
+                                placeholder="Jelaskan alasan penolakan disposal..."></textarea>
+                            @error('rejection_reason')
+                                <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="button" onclick="confirmReject()"
+                            class="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-xl font-bold hover:from-rose-700 hover:to-rose-800 shadow-lg shadow-rose-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Tolak Disposal
+                        </button>
+                    </form>
+                </div>
+
+                {{-- BACK BUTTON --}}
+                <a href="{{ route('disposals.index') }}"
+                    class="block w-full text-center px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-all duration-300">
+                    ← Kembali ke Daftar
+                </a>
+            </div>
         </div>
+    </div>
     </div>
 
     {{-- LIGHTBOX --}}

@@ -84,6 +84,7 @@ class DisposalController extends Controller
             'disposal_type' => 'required|in:' . implode(',', array_column(DisposalType::cases(), 'value')),
             'reason' => 'required|string|min:20',
             'evidence_photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'estimated_value' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ], [
             'asset_detail_id.required' => 'Aset harus dipilih.',
@@ -118,6 +119,7 @@ class DisposalController extends Controller
             'reason' => $validated['reason'],
             'evidence_photo' => $photoPath,
             'requested_by' => Auth::id(),
+            'estimated_value' => $validated['estimated_value'] ?? 0,
             'notes' => $validated['notes'],
         ]);
 
@@ -168,6 +170,13 @@ class DisposalController extends Controller
                 ->with('info', 'Disposal ini sudah di-review.');
         }
 
+        // Prevent self-review for integrity
+        if (Auth::id() === $disposal->requested_by) {
+            return redirect()
+                ->route('disposals.show', $disposal)
+                ->with('error', 'Demi integritas data, pengajuan disposal harus di-review oleh admin yang berbeda.');
+        }
+
         $disposal->load(['assetDetail.inventory.category', 'assetDetail.room.unit', 'assetDetail.fundingSource', 'requester']);
 
         return view('pages.disposals.review', compact('disposal'));
@@ -185,6 +194,7 @@ class DisposalController extends Controller
 
         $validated = $request->validate([
             'notes' => 'nullable|string',
+            'realized_value' => 'nullable|numeric|min:0',
         ]);
 
         if (!$disposal->canBeApproved()) {
@@ -193,7 +203,14 @@ class DisposalController extends Controller
                 ->with('error', 'Disposal tidak dapat disetujui. Pastikan aset tidak sedang dipinjam atau memiliki mutasi pending.');
         }
 
-        $success = $disposal->approve(Auth::user(), $validated['notes'] ?? null);
+        // Prevent self-approval for integrity
+        if (Auth::id() === $disposal->requested_by) {
+            return redirect()
+                ->route('disposals.show', $disposal)
+                ->with('error', 'Demi integritas data, Anda tidak dapat menyetujui pengajuan disposal yang Anda buat sendiri.');
+        }
+
+        $success = $disposal->approve(Auth::user(), $validated['notes'] ?? null, $validated['realized_value'] ?? null);
 
         if ($success) {
             return redirect()
@@ -222,6 +239,13 @@ class DisposalController extends Controller
             'rejection_reason.required' => 'Alasan penolakan harus diisi.',
             'rejection_reason.min' => 'Alasan penolakan minimal 10 karakter.',
         ]);
+
+        // Prevent self-rejection (though less likely, keep it for consistency)
+        if (Auth::id() === $disposal->requested_by) {
+            return redirect()
+                ->route('disposals.show', $disposal)
+                ->with('error', 'Demi integritas data, pengajuan disposal harus di-review oleh admin yang berbeda.');
+        }
 
         $success = $disposal->reject(Auth::user(), $validated['rejection_reason']);
 

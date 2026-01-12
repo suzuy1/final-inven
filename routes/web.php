@@ -54,8 +54,10 @@ Route::middleware('auth')->group(function () {
         'sumber-dana' => 'sumber_dana'
     ]);
 
-    // Manajemen User (Opsional, jika ada fitur admin kelola user)
-    Route::resource('users', UserController::class);
+    // Manajemen User (Hanya Admin yang bisa akses)
+    Route::middleware('admin')->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
 
     // ======================================================================

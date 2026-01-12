@@ -18,6 +18,8 @@ class Disposal extends Model
         'disposal_type' => DisposalType::class,
         'status' => DisposalStatus::class,
         'approved_at' => 'datetime',
+        'estimated_value' => 'decimal:2',
+        'realized_value' => 'decimal:2',
     ];
 
     // Relationships
@@ -85,13 +87,13 @@ class Disposal extends Model
     /**
      * Approve disposal request and soft delete the asset
      */
-    public function approve(User $admin, ?string $notes = null): bool
+    public function approve(User $admin, ?string $notes = null, ?float $realizedValue = null): bool
     {
         if (!$this->canBeApproved()) {
             return false;
         }
 
-        return DB::transaction(function () use ($admin, $notes) {
+        return DB::transaction(function () use ($admin, $notes, $realizedValue) {
             // Update disposal record
             $this->update([
                 'status' => DisposalStatus::APPROVED,
@@ -99,6 +101,7 @@ class Disposal extends Model
                 'approved_at' => now(),
                 'notes' => $notes,
                 'book_value' => $this->assetDetail->price, // Capture current price
+                'realized_value' => $realizedValue ?? $this->estimated_value,
             ]);
 
             // Soft delete the asset

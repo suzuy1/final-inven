@@ -1,30 +1,63 @@
-<aside
-   class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-slate-900 border-r border-slate-800 flex flex-col"
+{{-- Mobile Overlay Backdrop --}}
+<div 
+   x-cloak
+   x-show="sidebarOpen" 
+   x-transition:enter="transition-opacity ease-out duration-300"
+   x-transition:enter-start="opacity-0" 
+   x-transition:enter-end="opacity-100"
+   x-transition:leave="transition-opacity ease-in duration-200" 
+   x-transition:leave-start="opacity-100"
+   x-transition:leave-end="opacity-0" 
+   @click="sidebarOpen = false"
+   class="fixed inset-0 z-30 bg-slate-900/60 backdrop-blur-sm sm:hidden">
+</div>
+
+{{-- 
+   Sidebar: 
+   - Mobile: Hidden by default (-translate-x-full), shown when sidebarOpen is true
+   - Desktop (sm+): Always visible (sm:!translate-x-0 with !important overrides)
+   - Key: Initial state is hidden on mobile, Alpine adds translate-x-0 when opened
+--}}
+<aside 
+   :class="sidebarOpen ? 'translate-x-0 sm:translate-x-0' : '-translate-x-full sm:translate-x-0'"
+   class="fixed top-0 left-0 z-40 w-72 h-screen -translate-x-full sm:translate-x-0 transition-transform duration-300 ease-in-out sm:w-64 bg-slate-900 border-r border-slate-800 flex flex-col shadow-2xl sm:shadow-none"
    aria-label="Sidebar">
 
-   <div class="shrink-0 px-6 py-6 bg-slate-900 z-10">
-      <div class="flex items-center gap-3">
-         <div class="relative flex items-center justify-center">
-            <div class="absolute inset-0 bg-indigo-500/30 blur-md rounded-full"></div>
-            <svg class="relative w-10 h-10 transform transition-transform hover:scale-110 duration-300"
-               viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <!-- Left Face: Darkest -->
-               <path d="M16 28L6 22.2V10.2L16 16V28Z" fill="#4338ca" />
-               <!-- Right Face: Medium -->
-               <path d="M16 28L26 22.2V10.2L16 16V28Z" fill="#4f46e5" />
-               <!-- Top Face: Lightest -->
-               <path d="M16 16L26 10.2L16 4L6 10.2L16 16Z" fill="#6366f1" />
-               <!-- Gloss effect -->
-               <path d="M16 4L6 10.2L16 16L26 10.2L16 4Z" fill="url(#gloss_gradient)" opacity="0.4" />
-               <defs>
-                  <linearGradient id="gloss_gradient" x1="6" y1="10" x2="26" y2="10" gradientUnits="userSpaceOnUse">
-                     <stop stop-color="white" stop-opacity="0.5" />
-                     <stop offset="1" stop-color="white" stop-opacity="0" />
-                  </linearGradient>
-               </defs>
-            </svg>
+   <div class="shrink-0 px-4 sm:px-6 py-4 sm:py-6 bg-slate-900 z-10">
+      <div class="flex items-center justify-between">
+         <div class="flex items-center gap-3">
+            <div class="relative flex items-center justify-center">
+               <div class="absolute inset-0 bg-indigo-500/30 blur-md rounded-full"></div>
+               <svg class="relative w-10 h-10 transform transition-transform hover:scale-110 duration-300"
+                  viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Left Face: Darkest -->
+                  <path d="M16 28L6 22.2V10.2L16 16V28Z" fill="#4338ca" />
+                  <!-- Right Face: Medium -->
+                  <path d="M16 28L26 22.2V10.2L16 16V28Z" fill="#4f46e5" />
+                  <!-- Top Face: Lightest -->
+                  <path d="M16 16L26 10.2L16 4L6 10.2L16 16Z" fill="#6366f1" />
+                  <!-- Gloss effect -->
+                  <path d="M16 4L6 10.2L16 16L26 10.2L16 4Z" fill="url(#gloss_gradient)" opacity="0.4" />
+                  <defs>
+                     <linearGradient id="gloss_gradient" x1="6" y1="10" x2="26" y2="10" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="white" stop-opacity="0.5" />
+                        <stop offset="1" stop-color="white" stop-opacity="0" />
+                     </linearGradient>
+                  </defs>
+               </svg>
+            </div>
+            <span class="self-center text-lg sm:text-xl font-bold whitespace-nowrap text-white tracking-tight">SIM
+               INVENTARIS</span>
          </div>
-         <span class="self-center text-xl font-bold whitespace-nowrap text-white tracking-tight">SIM INVENTARIS</span>
+
+         {{-- Close Button (Mobile Only) --}}
+         <button @click="sidebarOpen = false"
+            class="sm:hidden p-2 -mr-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            aria-label="Close sidebar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+         </button>
       </div>
    </div>
 
@@ -207,18 +240,20 @@
 
          <div class="pt-6 pb-2 px-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Pengaturan</div>
 
-         <li>
-            <x-nav-link :href="route('users.index')" :active="request()->routeIs('users*')"
-               class="flex items-center p-2 rounded-lg group {{ request()->routeIs('users*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-               <svg
-                  class="w-5 h-5 transition duration-75 {{ request()->routeIs('users*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}"
-                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                     d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-               </svg>
-               <span class="ms-3">Manajemen Pengguna</span>
-            </x-nav-link>
-         </li>
+         @if(auth()->user()->role === 'admin')
+            <li>
+               <x-nav-link :href="route('users.index')" :active="request()->routeIs('users*')"
+                  class="flex items-center p-2 rounded-lg group {{ request()->routeIs('users*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                  <svg
+                     class="w-5 h-5 transition duration-75 {{ request()->routeIs('users*') ? 'text-white' : 'text-slate-400 group-hover:text-white' }}"
+                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                     <path
+                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                  </svg>
+                  <span class="ms-3">Manajemen Pengguna</span>
+               </x-nav-link>
+            </li>
+         @endif
 
          <div class="pt-6 pb-2 px-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Laporan</div>
 

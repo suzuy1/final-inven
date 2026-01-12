@@ -101,8 +101,8 @@
                                       'rusak_berat' => 'bg-rose-100 text-rose-800'
                                     ];
                                 @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $map[$unit->condition] }}">
-                                    {{ ucfirst(str_replace('_',' ',$unit->condition)) }}
+                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $map[$unit->condition->value] }}">
+                                    {{ $unit->condition->label() }}
                                 </span>
                             </td>
 

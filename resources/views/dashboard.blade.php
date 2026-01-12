@@ -4,28 +4,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        * { font-family: 'Inter', 'Figtree', sans-serif; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        * {
+            font-family: 'Inter', 'Figtree', sans-serif;
         }
-        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .stat-card:hover { transform: translateY(-4px) scale(1.02); }
-        .chart-container { position: relative; overflow: hidden; }
+
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .chart-container {
+            position: relative;
+            overflow: hidden;
+        }
+
         .chart-container::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            opacity: 0; transition: opacity 0.3s;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        .chart-container:hover::before { opacity: 1; }
+
+        .chart-container:hover::before {
+            opacity: 1;
+        }
     </style>
 @endpush
 
@@ -33,13 +65,15 @@
     <x-slot name="header">
         <div class="flex justify-between items-center w-full">
             <div>
-                <h2 class="font-black text-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    {{ __('Command Center') }}
+                <h2
+                    class="font-black text-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {{ __('Pusat Kendali') }}
                 </h2>
-                <p class="text-sm text-slate-500 mt-1">Real-time inventory intelligence dashboard</p>
+                <p class="text-sm text-slate-500 mt-1">Dashboard intelijen inventaris real-time</p>
             </div>
             <div class="text-right">
-                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">{{ now()->format('l') }}</div>
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">{{ now()->format('l') }}
+                </div>
                 <div class="text-sm font-bold text-slate-700">{{ now()->format('d F Y') }}</div>
             </div>
         </div>
@@ -62,8 +96,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-800">Action Center</h3>
-                        <p class="text-sm text-slate-500">Pending approvals requiring your attention</p>
+                        <h3 class="text-xl font-black text-slate-800">Pusat Aksi</h3>
+                        <p class="text-sm text-slate-500">Persetujuan tertunda yang memerlukan perhatian Anda</p>
                     </div>
                 </div>
 
@@ -100,8 +134,8 @@
                                     @endif
                                 </div>
 
-                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pending
-                                    Mutations</p>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mutasi
+                                    Tertunda</p>
                                 <h4
                                     class="text-4xl font-black {{ $pendingMutations > 0 ? 'bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent' : 'text-slate-700' }} mb-4">
                                     {{ $pendingMutations }}
@@ -109,7 +143,7 @@
 
                                 <div
                                     class="flex items-center text-sm font-bold text-blue-600 group-hover:translate-x-2 transition-transform">
-                                    Review Now
+                                    Tinjau Sekarang
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -152,8 +186,8 @@
                                     @endif
                                 </div>
 
-                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pending
-                                    Disposals</p>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Penghapusan
+                                    Tertunda</p>
                                 <h4
                                     class="text-4xl font-black {{ $pendingDisposals > 0 ? 'bg-gradient-to-r from-rose-600 to-rose-700 bg-clip-text text-transparent' : 'text-slate-700' }} mb-4">
                                     {{ $pendingDisposals }}
@@ -161,7 +195,7 @@
 
                                 <div
                                     class="flex items-center text-sm font-bold text-rose-600 group-hover:translate-x-2 transition-transform">
-                                    Review Now
+                                    Tinjau Sekarang
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -204,8 +238,8 @@
                                     @endif
                                 </div>
 
-                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pending
-                                    Procurements</p>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pengadaan
+                                    Tertunda</p>
                                 <h4
                                     class="text-4xl font-black {{ $pendingProcurements > 0 ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent' : 'text-slate-700' }} mb-4">
                                     {{ $pendingProcurements }}
@@ -213,7 +247,7 @@
 
                                 <div
                                     class="flex items-center text-sm font-bold text-emerald-600 group-hover:translate-x-2 transition-transform">
-                                    Review Now
+                                    Tinjau Sekarang
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -237,8 +271,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-800">Operational Metrics</h3>
-                        <p class="text-sm text-slate-500">Key performance indicators at a glance</p>
+                        <h3 class="text-xl font-black text-slate-800">Metrik Operasional</h3>
+                        <p class="text-sm text-slate-500">Indikator kinerja kunci sekilas pandang</p>
                     </div>
                 </div>
 
@@ -255,10 +289,11 @@
                                 </svg>
                             </div>
                         </div>
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Asset Value</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Nilai Aset</p>
                         <h4 class="text-2xl font-black text-slate-800 mb-1">Rp
-                            {{ number_format($totalAssetValue, 0, ',', '.') }}</h4>
-                        <p class="text-xs text-slate-400">Across all categories</p>
+                            {{ number_format($totalAssetValue, 0, ',', '.') }}
+                        </h4>
+                        <p class="text-xs text-slate-400">Semua kategori</p>
                     </div>
 
                     <!-- Utilization Rate -->
@@ -273,9 +308,10 @@
                                 </svg>
                             </div>
                         </div>
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Utilization Rate</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tingkat Pemanfaatan
+                        </p>
                         <h4 class="text-2xl font-black text-slate-800 mb-1">{{ $utilizationRate }}%</h4>
-                        <p class="text-xs text-slate-400">{{ $activeLoans }} items on loan</p>
+                        <p class="text-xs text-slate-400">{{ $activeLoans }} item sedang dipinjam</p>
                     </div>
 
                     <!-- Low Stock Alerts -->
@@ -290,9 +326,10 @@
                                 </svg>
                             </div>
                         </div>
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Low Stock Alerts</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Peringatan Stok Rendah
+                        </p>
                         <h4 class="text-2xl font-black text-slate-800 mb-1">{{ $lowStockCount }}</h4>
-                        <p class="text-xs text-slate-400">Items below threshold</p>
+                        <p class="text-xs text-slate-400">Item di bawah batas minimum</p>
                     </div>
 
                     <!-- System Status -->
@@ -307,11 +344,11 @@
                                 </svg>
                             </div>
                         </div>
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">System Status</p>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Sistem</p>
                         <h4
                             class="text-2xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-1">
                             ONLINE</h4>
-                        <p class="text-xs text-slate-400">All services operational</p>
+                        <p class="text-xs text-slate-400">Semua layanan operasional</p>
                     </div>
                 </div>
             </section>
@@ -324,13 +361,13 @@
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
                                 <div class="p-2.5 bg-violet-100 text-violet-600 rounded-xl">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
                                 </div>
-                                <h4 class="font-black text-slate-800">Items per Category</h4>
+                                <h4 class="font-black text-slate-800">Item per Kategori</h4>
                             </div>
                             <span class="text-xs font-bold text-violet-600 bg-violet-50 px-3 py-1 rounded-full">
                                 {{ $categoryItemCount->sum('count') }} Total
@@ -355,7 +392,7 @@
                                 </div>
                             @empty
                                 <div class="text-center py-12">
-                                    <p class="text-sm font-bold text-slate-400 italic">No category data available</p>
+                                    <p class="text-sm font-bold text-slate-400 italic">Tidak ada data kategori</p>
                                 </div>
                             @endforelse
                         </div>
@@ -366,18 +403,18 @@
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
                                 <div class="p-2.5 bg-cyan-100 text-cyan-600 rounded-xl">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                                     </svg>
                                 </div>
-                                <h4 class="font-black text-slate-800">Asset Condition</h4>
+                                <h4 class="font-black text-slate-800">Kondisi Aset</h4>
                             </div>
                             <span class="text-xs font-bold text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full">
-                                Distribution
+                                Distribusi
                             </span>
                         </div>
                         <div id="chart-condition" class="w-full h-72"></div>
@@ -403,8 +440,8 @@
                     <div class="relative z-10">
                         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                             <div>
-                                <h3 class="text-2xl font-black text-white mb-2">Quick Actions</h3>
-                                <p class="text-purple-200 text-sm">Fast access to common inventory tasks</p>
+                                <h3 class="text-2xl font-black text-white mb-2">Aksi Cepat</h3>
+                                <p class="text-purple-200 text-sm">Akses cepat ke tugas inventaris umum</p>
                             </div>
                             <div class="flex flex-wrap gap-3">
                                 <a href="{{ route('inventaris.categories') }}"
@@ -414,7 +451,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 4v16m8-8H4" />
                                     </svg>
-                                    Add Asset
+                                    Tambah Aset
                                 </a>
                                 <a href="{{ route('peminjaman.create') }}"
                                     class="group px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl font-bold text-sm text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2 border border-white/20">
@@ -423,7 +460,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    New Loan
+                                    Peminjaman Baru
                                 </a>
                                 <a href="{{ route('pengadaan.create') }}"
                                     class="group px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl font-bold text-sm text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2 border border-white/20">
@@ -432,7 +469,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    Request Procurement
+                                    Ajukan Pengadaan
                                 </a>
                             </div>
                         </div>
@@ -447,9 +484,9 @@
                     <!-- Asset Category Breakdown -->
                     <div class="glass-card p-8 rounded-3xl shadow-xl border-2 border-white/50 chart-container">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-black text-slate-800">Asset Value by Category</h3>
-                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">Live
-                                Data</span>
+                            <h3 class="text-lg font-black text-slate-800">Nilai Aset per Kategori</h3>
+                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">Data
+                                Real-time</span>
                         </div>
                         <div id="chart-category" class="w-full h-80"></div>
                     </div>
@@ -457,9 +494,9 @@
                     <!-- Loan Trends -->
                     <div class="glass-card p-8 rounded-3xl shadow-xl border-2 border-white/50 chart-container">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-black text-slate-800">Loan Trends ({{ date('Y') }})</h3>
+                            <h3 class="text-lg font-black text-slate-800">Tren Peminjaman ({{ date('Y') }})</h3>
                             <span
-                                class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Monthly</span>
+                                class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">Bulanan</span>
                         </div>
                         <div id="chart-loans" class="w-full h-80"></div>
                     </div>
@@ -476,9 +513,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Overdue Loans
+                                Peminjaman Terlambat
                             </h3>
-                            <p class="text-rose-100 text-xs mt-1">Items past return date</p>
+                            <p class="text-rose-100 text-xs mt-1">Item melewati tanggal pengembalian</p>
                         </div>
                         <div class="divide-y divide-slate-100 max-h-96 overflow-y-auto">
                             @forelse($lateLoans as $loan)
@@ -501,8 +538,8 @@
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <p class="text-slate-500 text-sm font-semibold">No overdue loans</p>
-                                    <p class="text-slate-400 text-xs">Great job keeping track!</p>
+                                    <p class="text-slate-500 text-sm font-semibold">Tidak ada peminjaman terlambat</p>
+                                    <p class="text-slate-400 text-xs">Bagus! Tetap pantau dengan baik!</p>
                                 </div>
                             @endforelse
                         </div>
@@ -517,9 +554,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
-                                Expiring Soon
+                                Segera Kadaluarsa
                             </h3>
-                            <p class="text-amber-100 text-xs mt-1">Consumables nearing expiry</p>
+                            <p class="text-amber-100 text-xs mt-1">Barang habis pakai mendekati kadaluarsa</p>
                         </div>
                         <div class="divide-y divide-slate-100 max-h-96 overflow-y-auto">
                             @forelse($expiringItems as $item)
@@ -542,8 +579,8 @@
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <p class="text-slate-500 text-sm font-semibold">All items fresh</p>
-                                    <p class="text-slate-400 text-xs">No items expiring soon</p>
+                                    <p class="text-slate-500 text-sm font-semibold">Semua item masih segar</p>
+                                    <p class="text-slate-400 text-xs">Tidak ada item yang akan kadaluarsa</p>
                                 </div>
                             @endforelse
                         </div>
@@ -709,7 +746,7 @@
                                 },
                                 total: {
                                     show: true,
-                                    label: 'Total Assets',
+                                    label: 'Total Aset',
                                     fontSize: '12px',
                                     fontWeight: 600,
                                     color: '#94a3b8',
@@ -732,15 +769,15 @@
                 stroke: { width: 4, colors: ['#fff'] },
                 tooltip: {
                     theme: 'light',
-                    y: { formatter: function(val) { return val + " units" } }
+                    y: { formatter: function (val) { return val + " units" } }
                 }
             };
-            
+
             if (Object.keys(conditionData).length > 0 && document.querySelector("#chart-condition")) {
                 var chartCondition = new ApexCharts(document.querySelector("#chart-condition"), optionsCondition);
                 chartCondition.render();
-            } else if(document.querySelector("#chart-condition")) {
-                document.querySelector("#chart-condition").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-bold italic">No condition data</div>';
+            } else if (document.querySelector("#chart-condition")) {
+                document.querySelector("#chart-condition").innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 font-bold italic">Tidak ada data kondisi</div>';
             }
         });
     </script>

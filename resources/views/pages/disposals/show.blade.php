@@ -137,6 +137,24 @@
                                 <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Alasan Disposal</label>
                                 <p class="text-sm text-slate-700 leading-relaxed">{{ $disposal->reason }}</p>
                             </div>
+                            @if($disposal->estimated_value > 0 || $disposal->realized_value > 0)
+                                <div class="bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border-2 border-emerald-100 shadow-sm flex flex-col md:flex-row gap-6">
+                                    <div class="flex-1">
+                                        <label class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">Estimasi Nilai</label>
+                                        <div class="text-lg font-bold text-emerald-600">
+                                            Rp {{ number_format($disposal->estimated_value, 0, ',', '.') }}
+                                        </div>
+                                    </div>
+                                    @if($disposal->status->value == 'approved' && $disposal->realized_value > 0)
+                                        <div class="flex-1 border-t md:border-t-0 md:border-l border-emerald-200 pt-4 md:pt-0 md:pl-6">
+                                            <label class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2 block">Realisasi Akhir</label>
+                                            <div class="text-lg font-bold text-emerald-600">
+                                                Rp {{ number_format($disposal->realized_value, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                             @if($disposal->notes)
                                 <div class="bg-gradient-to-br from-amber-50 to-white rounded-xl p-4 border-2 border-amber-100 shadow-sm">
                                     <label class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2 block flex items-center gap-1">
@@ -254,13 +272,25 @@
                             {{-- Action Button --}}
                             @if(auth()->user()->role === 'admin' && $disposal->status->value == 'pending')
                                 <div class="mt-6 pt-6 border-t-2 border-slate-100">
-                                    <a href="{{ route('disposals.review', $disposal) }}"
-                                        class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-bold hover:from-red-700 hover:to-red-800 shadow-lg shadow-red-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        Review Disposal
-                                    </a>
+                                    @if(auth()->id() === $disposal->requested_by)
+                                        <div class="p-4 bg-amber-50 border-2 border-amber-200 rounded-xl text-center shadow-sm">
+                                            <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs font-bold text-amber-800 uppercase tracking-wider">Independent Review Required</p>
+                                            <p class="text-[10px] text-amber-600 mt-1 leading-relaxed">Demi integritas data, pengajuan ini harus di-review oleh rekan admin Anda.</p>
+                                        </div>
+                                    @else
+                                        <a href="{{ route('disposals.review', $disposal) }}"
+                                            class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-bold hover:from-red-700 hover:to-red-800 shadow-lg shadow-red-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Review Disposal
+                                        </a>
+                                    @endif
                                 </div>
                             @endif
 

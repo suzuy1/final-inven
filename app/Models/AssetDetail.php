@@ -12,6 +12,7 @@ class AssetDetail extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
+        'condition' => \App\Enums\AssetCondition::class,
         'status' => \App\Enums\AssetStatus::class,
         'purchase_date' => 'date',
         'repair_date' => 'date',
