@@ -36,25 +36,30 @@ Aplikasi ini membedakan secara tegas antara **Aset Tetap** (Laptop, Proyektor, K
 
 ### 5. 🔄 Sirkulasi & Transaksi
 * **Peminjaman Aset:** Validasi otomatis (barang rusak/sedang dipinjam tidak bisa dipinjamkan).
-* **Penggunaan BHP:** Pencatatan pengambilan stok untuk keperluan operasional.
+* **Audit Penghapusan (Disposal):** Fitur terbaru yang memungkinkan pencatatan estimasi nilai dan nilai realisasi saat penghapusan aset untuk transparansi finansial.
 
 ### 6. 📄 Pelaporan (Reporting)
 * Cetak laporan otomatis ke format **PDF**.
 * Laporan Aset per Ruangan, Laporan Sisa Stok BHP, dan Laporan Peminjaman Aktif.
 
-### 7. 🏗️ Peningkatan Arsitektur & Kualitas Kode (v2.0)
+---
+
+## 🏗️ Peningkatan Arsitektur & Antarmuka (v2.1)
+
+* **Audit Finansial Disposal:** Implementasi field `estimated_value` dan `realized_value` pada modul disposal untuk melacak integritas anggaran.
+* **Mobile Friendly UI:** Pembaruan pada sidebar dan header untuk pengalaman pengguna yang lebih baik di perangkat mobile (Slide-out Sidebar & Compact Header).
+* **Lokalisasi Penuh:** Seluruh antarmuka dashboard telah diterjemahkan ke dalam Bahasa Indonesia untuk kemudahan operasional.
 * **PHP Enums:** Menggantikan *magic strings* untuk status dan kondisi aset, meminimalisir *typo* dan meningkatkan keamanan tipe data.
 * **Database Agnostic:** Menggunakan standar SQL universal (`CASE WHEN`) untuk sorting, memastikan kompatibilitas dengan MySQL, PostgreSQL, dan SQLite.
-* **Fat Model, Skinny Controller:** Logika bisnis (validasi peminjaman) dipusatkan di Model, membuat Controller lebih bersih dan mudah dibaca.
 
 ---
 
 ## 🛠️ Teknologi yang Digunakan
 
-* **Backend Framework:** Laravel 12
-* **Language:** PHP 8.3
+* **Backend Framework:** Laravel 11/12
+* **Language:** PHP 8.2+
 * **Database:** MySQL
-* **Frontend:** Blade Templates + Tailwind CSS (Flowbite)
+* **Frontend:** Blade Templates + Tailwind CSS (Flowbite) + Alpine.js
 * **Authentication:** Laravel Breeze
 * **PDF Generator:** Barryvdh DomPDF
 
@@ -64,11 +69,11 @@ Aplikasi ini membedakan secara tegas antara **Aset Tetap** (Laptop, Proyektor, K
 
 | Dashboard | Peminjaman |
 |:---:|:---:|
-| ![Dashboard](https://placehold.co/600x400?text=Screenshot+Dashboard) | ![Peminjaman](https://placehold.co/600x400?text=Screenshot+Peminjaman) |
+| ![Dashboard](https://placehold.co/600x400?text=Dashboard+Indonesian) | ![Peminjaman](https://placehold.co/600x400?text=Peminjaman+Asset) |
 
-| Stok BHP | Laporan PDF |
+| Audit Disposal | Mobile UI |
 |:---:|:---:|
-| ![Stok](https://placehold.co/600x400?text=Screenshot+Stok+BHP) | ![Laporan](https://placehold.co/600x400?text=Screenshot+Laporan+PDF) |
+| ![Disposal](https://placehold.co/600x400?text=Disposal+Financial+Audit) | ![Mobile](https://placehold.co/600x400?text=Mobile+Responsive+Sidebar) |
 
 ---
 
@@ -78,8 +83,8 @@ Ikuti langkah ini untuk menjalankan proyek di komputer lokal:
 
 1.  **Clone Repositori**
     ```bash
-    git clone [https://github.com/username/sim-inventaris.git](https://github.com/username/sim-inventaris.git)
-    cd sim-inventaris
+    git clone https://github.com/suzuy1/final-inven.git
+    cd final-inven
     ```
 
 2.  **Install Dependensi**
@@ -96,11 +101,9 @@ Ikuti langkah ini untuk menjalankan proyek di komputer lokal:
     ```
 
 4.  **Setup Database**
-    Pastikan database MySQL `sim_inventaris_db` sudah dibuat, lalu jalankan migrasi dan seeder.
+    Pastikan database MySQL sudah dibuat, lalu jalankan migrasi dan seeder.
     ```bash
-    php artisan migrate:fresh --seed --seeder=UserSeeder
-    php artisan db:seed --class=CategorySeeder
-    php artisan db:seed --class=MasterDataSeeder
+    php artisan migrate:fresh --seed
     ```
 
 5.  **Jalankan Aplikasi**
@@ -114,8 +117,6 @@ Ikuti langkah ini untuk menjalankan proyek di komputer lokal:
 
 ## 🔐 Akun Demo
 
-Gunakan akun berikut untuk masuk ke sistem:
-
 | Role | Email | Password |
 | :--- | :--- | :--- |
 | **Administrator** | `admin@kampus.com` | `password` |
@@ -127,7 +128,7 @@ Gunakan akun berikut untuk masuk ke sistem:
 
 Dikembangkan sebagai Tugas Akhir / Proyek Mata Kuliah.
 
-* **Nama:** M. Oriza saltifa
+* **Nama:** M. Oriza Saltifa
 * **NIM:** 24210099
 * **Kampus:** UBBG
 
