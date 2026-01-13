@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DisposalStatus;
+use App\Enums\LoanStatus;
+use App\Enums\MutationStatus;
+use App\Enums\ProcurementStatus;
 use App\Models\AssetDetail;
 use App\Models\ConsumableDetail;
 use App\Models\Loan;
@@ -16,9 +20,9 @@ class DashboardController extends Controller
     public function index()
     {
         // --- 1. ACTION CENTER (PENDING APPROVALS) ---
-        $pendingMutations = Mutation::where('status', \App\Enums\MutationStatus::PENDING)->count();
-        $pendingDisposals = Disposal::where('status', \App\Enums\DisposalStatus::PENDING)->count();
-        $pendingProcurements = Procurement::where('status', 'pending')->count();
+        $pendingMutations = Mutation::where('status', MutationStatus::PENDING)->count();
+        $pendingDisposals = Disposal::where('status', DisposalStatus::PENDING)->count();
+        $pendingProcurements = Procurement::pending()->count();
 
         // --- 2. FINANCIAL INSIGHTS ---
         $totalAssetValue = AssetDetail::sum('price');

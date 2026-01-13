@@ -228,51 +228,13 @@
 
                                     {{-- Status --}}
                                     <td class="px-6 py-4 text-center whitespace-nowrap">
-                                        @php
-                                            // Konfigurasi tampilan berdasarkan status
-                                            $statusStyle = match ($req->status) {
-                                                'pending' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                                'approved' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                                'rejected' => 'bg-rose-50 text-rose-700 border-rose-200',
-                                                'completed' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                                                default => 'bg-gray-50 text-gray-700 border-gray-200',
-                                            };
-
-                                            $statusLabel = match ($req->status) {
-                                                'pending' => 'Menunggu',
-                                                'approved' => 'Disetujui',
-                                                'rejected' => 'Ditolak',
-                                                'completed' => 'Selesai',
-                                                default => 'Unknown',
-                                            };
-                                        @endphp
-
                                         <div
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {{ $statusStyle }}">
-                                            {{-- Logika Ikon SVG --}}
-                                            @if($req->status == 'pending')
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @elseif($req->status == 'approved')
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            @elseif($req->status == 'rejected')
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            @elseif($req->status == 'completed')
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @endif
-
-                                            {{ $statusLabel }}
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {{ $req->status->badgeClasses() }}">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="{{ $req->status->iconPath() }}" />
+                                            </svg>
+                                            {{ $req->status->label() }}
                                         </div>
 
                                         @if($req->admin_note)
@@ -297,7 +259,7 @@
                                             class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 
                                             {{-- APPROVE & REJECT --}}
-                                            @if(Auth::user()->role == 'admin' && $req->status == 'pending')
+                                            @if(Auth::user()->role == 'admin' && $req->canBeApproved())
                                                 <button
                                                     onclick="openApproveModal('{{ $req->id }}', '{{ $req->item_name }}', '{{ $req->quantity }}', '{{ $req->type }}', '{{ $req->category->name ?? '-' }}')"
                                                     class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all"
@@ -318,11 +280,10 @@
                                             @endif
 
                                             {{-- COMPLETE --}}
-                                            @if(Auth::user()->role == 'admin' && $req->status == 'approved')
+                                            @if(Auth::user()->role == 'admin' && $req->canBeCompleted())
                                                 <button
                                                     onclick="openCompleteModal('{{ $req->id }}', '{{ $req->item_name }}', '{{ $req->quantity }}', '{{ $req->unit_price_estimation }}', '{{ $req->type }}', '{{ $req->category->name ?? '-' }}')"
                                                     class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-all">
-                                                    {{-- Ikon Bendera (Finish) --}}
                                                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -333,7 +294,7 @@
                                             @endif
 
                                             {{-- DELETE --}}
-                                            @if($req->status == 'pending' && (Auth::user()->id == $req->user_id || Auth::user()->role == 'admin'))
+                                            @if($req->canBeDeleted(Auth::user()))
                                                 <form action="{{ route('pengadaan.destroy', $req->id) }}" method="POST"
                                                     onsubmit="return confirm('Hapus usulan ini?');" class="inline">
                                                     @csrf @method('DELETE')
@@ -351,7 +312,7 @@
                                             @endif
 
                                             {{-- Fallback untuk visual balance jika tidak ada aksi --}}
-                                            @if(!(Auth::user()->role == 'admin' && in_array($req->status, ['pending', 'approved'])) && !($req->status == 'pending' && (Auth::user()->id == $req->user_id || Auth::user()->role == 'admin')))
+                                            @if(!$req->canBeApproved() && !$req->canBeCompleted() && !$req->canBeDeleted(Auth::user()))
                                                 <span class="text-gray-300 text-xs">-</span>
                                             @endif
                                         </div>
@@ -388,67 +349,9 @@
     </div>
 
 
-    <script>
 
-        // 1. REJECT LOGIC
-        function openRejectModal(id) {
-            let reason = prompt("Masukkan alasan penolakan (Wajib diisi):");
-            if (reason !== null && reason.trim() !== "") {
-                submitStatusForm(id, 'rejected', reason);
-            } else if (reason !== null) {
-                alert("Alasan penolakan tidak boleh kosong.");
-            }
-        }
-
-        // 2. APPROVE LOGIC (MODAL)
-        function openApproveModal(id, itemName, qty, itemType, categoryName) {
-            document.getElementById('approve_id').value = id;
-            document.getElementById('modal_item_name').innerText = itemName;
-            document.getElementById('modal_item_qty').innerText = qty; // removed ' Unit' duplication
-            document.getElementById('modal_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'BHP';
-            document.getElementById('modal_item_category').innerText = categoryName;
-            document.getElementById('approveModal').classList.remove('hidden');
-        }
-
-        function closeApproveModal() {
-            document.getElementById('approveModal').classList.add('hidden');
-        }
-
-        // 3. COMPLETE LOGIC (MODAL)
-        function openCompleteModal(id, itemName, qty, price, itemType, categoryName) {
-            document.getElementById('complete_id').value = id;
-            document.getElementById('modal_complete_item_name').innerText = itemName;
-            document.getElementById('modal_complete_item_qty').innerText = qty;
-            document.getElementById('modal_complete_item_type').innerText = itemType === 'asset' ? 'Aset Tetap' : 'BHP';
-            document.getElementById('modal_complete_item_category').innerText = categoryName;
-
-            let today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-            document.getElementById('batch_code').value = 'PROC-' + id + '-' + today;
-            document.getElementById('unit_price').value = price;
-
-            document.getElementById('completeModal').classList.remove('hidden');
-        }
-
-        function closeCompleteModal() {
-            document.getElementById('completeModal').classList.add('hidden');
-        }
-
-        function submitStatusForm(id, status, note = null) {
-            let form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/pengadaan/' + id + '/status';
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            let hiddenMethod = document.createElement('input'); hiddenMethod.type = 'hidden'; hiddenMethod.name = '_method'; hiddenMethod.value = 'PUT'; form.appendChild(hiddenMethod);
-            let hiddenCsrf = document.createElement('input'); hiddenCsrf.type = 'hidden'; hiddenCsrf.name = '_token'; hiddenCsrf.value = csrfToken; form.appendChild(hiddenCsrf);
-            let hiddenStatus = document.createElement('input'); hiddenStatus.type = 'hidden'; hiddenStatus.name = 'status'; hiddenStatus.value = status; form.appendChild(hiddenStatus);
-            if (note) {
-                let hiddenNote = document.createElement('input'); hiddenNote.type = 'hidden'; hiddenNote.name = 'admin_note'; hiddenNote.value = note; form.appendChild(hiddenNote);
-            }
-            document.body.appendChild(form);
-            form.submit();
-        }
-    </script>
+    {{-- Load procurement JavaScript --}}
+    @vite(['resources/js/procurement.js'])
 
     @include('components.modals-procurement')
 
