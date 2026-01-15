@@ -1,0 +1,23 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-BxrdleWk.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CJy8ASEk.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/procurement.js": {
+    "file": "assets/procurement-CuuJN8w0.js",
+    "name": "procurement",
+    "src": "resources/js/procurement.js",
+    "isEntry": true
+  }
+}
